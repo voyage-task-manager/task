@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "950125899855",
+    "firebase_url": "https://frok-3f6ce.firebaseio.com",
+    "project_id": "frok-3f6ce",
+    "storage_bucket": "frok-3f6ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950125899855:android:c23aca7b6a4d6d8b",
+        "android_client_info": {
+          "package_name": "com.example.felipe.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "950125899855-7h7vhm2daaith1pqfjnkevjv1ht9tvr6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.felipe.app",
+            "certificate_hash": "f69bdbccee2ac3f5bfbc18bde918afc522dadacb"
+          }
+        },
+        {
+          "client_id": "950125899855-99pv3oonqura01slahfama0m4cu7a2e8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1QVWtdMwYRmJCI665rJhwgXRNiR5pvRg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "950125899855-99pv3oonqura01slahfama0m4cu7a2e8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
