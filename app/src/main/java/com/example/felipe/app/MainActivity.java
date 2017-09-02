@@ -1,19 +1,24 @@
 package com.example.felipe.app;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.Manifest;
+import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,13 +35,20 @@ import com.google.android.gms.common.api.Status;
 
 import android.provider.CalendarContract.Events;
 
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import models.Task;
+
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
-    private ImageView photoImageView;
-    private TextView nameTextView;
-    private TextView emailTextView;
-    private TextView idTextView;
     private GoogleApiClient googleApiClient;
+    private ListView listView;
+    private ArrayAdapter<Task> adapter;
     private final int PERMISSIONS_REQUEST_READ_CALENDAR = 788;
 
     @Override
@@ -44,6 +56,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        listView = (ListView) findViewById(R.id.lista);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        listView.setAdapter(adapter);
+
+        /*
         photoImageView = (ImageView) findViewById(R.id.photoImageView);
         nameTextView = (TextView) findViewById(R.id.nameTextView);
         emailTextView = (TextView) findViewById(R.id.emailTextView);
@@ -62,9 +79,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, PERMISSIONS_REQUEST_READ_CALENDAR);
             return;
         }
+        */
+
         readCalendar();
     }
 
+    /*
     @Override
     protected void onStart() {
         super.onStart();
@@ -82,14 +102,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             });
         }
     }
+    */
 
     private void handleSigInResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
-            this.nameTextView.setText(account.getDisplayName());
-            emailTextView.setText(account.getEmail());
-            idTextView.setText(account.getId());
-            Glide.with(this).load(account.getPhotoUrl()).into(photoImageView);
+            // Glide.with(this).load(account.getPhotoUrl()).into(photoImageView);
         } else {
             goLoginScreen();
         }
@@ -126,18 +144,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     public void readCalendar() {
-        // Run query
-        Cursor cur = null;
-        ContentResolver cr = getContentResolver();
-        Uri uri = Events.CONTENT_URI;
-        cur = cr.query(uri, new String[]{Events.TITLE, Events.DESCRIPTION}, null, null, null);
-        handleCalendar(cur);
+        Uri.Builder eventsUriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon();
+
+        long dtStart = System.currentTimeMillis();
+        long dtEnd = System.currentTimeMillis() + (24*3600*24*1000);
+
+        ContentUris.appendId(eventsUriBuilder, dtStart);
+        ContentUris.appendId(eventsUriBuilder, dtEnd);
+        Uri eventsUri = eventsUriBuilder.build();
+
+        String filter = "( " + CalendarContract.Instances.BEGIN + " >= ? )";
+        String[] values = new String[]{ Long.toString(dtStart) };
+
+        Cursor cursor = null;
+        cursor = getContentResolver().query(eventsUri, new String[]{Events.TITLE, CalendarContract.Instances.BEGIN}, filter, values, CalendarContract.Instances.BEGIN + " ASC");
+        handleCalendar(cursor);
     }
 
     public void handleCalendar (Cursor cur) {
+        List<Task> list = new ArrayList<>();
         while (cur.moveToNext()) {
-            Log.d("INFO::", cur.getString(0) + " : " + cur.getString(1));
+            list.add(new Task(cur.getString(0)));
         }
+        adapter.addAll(list);
     }
 
     @Override

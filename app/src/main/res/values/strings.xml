@@ -2,5 +2,6 @@
     <string name="app_name">App</string>
     <string name="log_in_error">Erro ao iniciar sessao</string>
     <string name="logout">Log out</string>
+    <string name="all">Tarefas</string>
     <string name="logout_error">Nao foi possivel realizar o log out do aplicativo</string>
 </resources>
