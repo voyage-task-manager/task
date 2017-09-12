@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,8 +48,7 @@ import models.Task;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleApiClient googleApiClient;
-    private ListView listView;
-    private ArrayAdapter<Task> adapter;
+    private LinearLayout linear;
     private final int PERMISSIONS_REQUEST_READ_CALENDAR = 788;
 
     @Override
@@ -56,10 +56,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        listView = (ListView) findViewById(R.id.lista);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        listView.setAdapter(adapter);
-
+        linear = (LinearLayout) findViewById(R.id.linear);
         /*
         photoImageView = (ImageView) findViewById(R.id.photoImageView);
         nameTextView = (TextView) findViewById(R.id.nameTextView);
@@ -166,7 +163,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         while (cur.moveToNext()) {
             list.add(new Task(cur.getString(0)));
         }
-        adapter.addAll(list);
+        PersonalAdapter adapter = new PersonalAdapter(this, list);
+        for (int i=0; i<list.size(); i++)
+            linear.addView(adapter.getView(i, null, linear));
+        //listView.setAdapter(adapter);
     }
 
     @Override
