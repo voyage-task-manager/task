@@ -1,16 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal">
+    android:gravity="left">
 
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10dp"
+            android:paddingRight="10dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
+            android:text="SEX, 20 de set"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="6dp"
+            android:background="#eee" />
+
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:textSize="10dp"
-        android:textStyle="bold"
-        android:text="SEX, 20 de set"/>
+        android:id="@+id/events"
+        android:orientation="vertical">
+    </android.support.v7.widget.RecyclerView>
+
 
 </LinearLayout>

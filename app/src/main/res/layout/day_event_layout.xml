@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="20dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:weightSum="1">
+
+    <View
+        android:id="@+id/circle"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:background="@drawable/round"
+        android:layout_marginTop="1dp"
+        android:layout_marginRight="10dp"/>
+
+    <TextView
+        android:id="@+id/event_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Evento ABC.XYZ"/>
+
+    <TextView
+        android:id="@+id/clock_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="8:00 - 10:00"
+        android:textColor="#777"
+        android:textSize="8dp"/>
+
+</LinearLayout>

@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void handleCalendar (Cursor cur) {
         List<Task> list = new ArrayList<>();
         while (cur.moveToNext()) {
-            list.add(new Task(cur.getString(0)));
+            list.add(new Task(cur.getString(0), null));
         }
         PersonalAdapter adapter = new PersonalAdapter(this, list);
         for (int i=0; i<list.size(); i++)

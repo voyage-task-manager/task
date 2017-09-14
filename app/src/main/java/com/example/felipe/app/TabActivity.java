@@ -2,6 +2,7 @@ package com.example.felipe.app;
 
 import android.content.ContentUris;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import models.Day;
@@ -82,9 +84,11 @@ public class TabActivity extends AppCompatActivity {
     public void calendar () {
         Bundle bundle = new Bundle();
         Calendar c = Calendar.getInstance();
+        List<Task> tasks = readCalendar();
         Day day = new Day(c);
         bundle.putInt("today", c.get(Calendar.DAY_OF_MONTH));
         bundle.putInt("last", Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH));
+        bundle.putParcelableArrayList("tasks", new ArrayList<Parcelable>(tasks));
         CalendarFragment frag = new CalendarFragment();
         frag.setArguments(bundle);
         fm = getSupportFragmentManager();
@@ -108,14 +112,25 @@ public class TabActivity extends AppCompatActivity {
         String[] values = new String[]{ Long.toString(dtStart) };
 
         Cursor cursor = null;
-        cursor = getContentResolver().query(eventsUri, new String[]{CalendarContract.Events.TITLE, CalendarContract.Instances.BEGIN}, filter, values, CalendarContract.Instances.BEGIN + " ASC");
+        String[] fields = new String[] {
+                CalendarContract.Events.TITLE,
+                CalendarContract.Instances.BEGIN,
+                CalendarContract.Events.DISPLAY_COLOR,
+                CalendarContract.Instances.END
+        };
+        cursor = getContentResolver().query(eventsUri, fields, filter, values, CalendarContract.Instances.BEGIN + " ASC");
         return handleCalendar(cursor);
     }
 
     public List<Task> handleCalendar (Cursor cur) {
         List<Task> list = new ArrayList<>();
         while (cur.moveToNext()) {
-            list.add(new Task(cur.getString(0)));
+            Date date = new Date(cur.getLong(1));
+            Date end = new Date(cur.getLong(3));
+            String color = String.format("#%06X", (0xFFFFFF & cur.getInt(2)));
+            Task t = new Task(cur.getString(0), date, color);
+            t.setEnd(end);
+            list.add(t);
         }
         return list;
     }

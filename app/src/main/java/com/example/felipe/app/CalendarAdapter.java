@@ -1,11 +1,22 @@
 package com.example.felipe.app;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import models.Day;
@@ -42,13 +53,25 @@ public class CalendarAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = act.getLayoutInflater()
-                .inflate(R.layout.day_layout, parent, false);
+
+        View view;
+        ViewHolder holder;
+
+        if( convertView == null) {
+            view = act.getLayoutInflater().inflate(R.layout.day_layout, parent, false);
+            holder = new ViewHolder(view);
+            view.setTag(holder);
+        } else {
+            view = convertView;
+            holder = (ViewHolder) view.getTag();
+        }
+
         Day day = days.get(position);
-        TextView text = (TextView)
-                view.findViewById(R.id.date);
-        text.setText("" + day.toString());
+        holder.layout.setAdapter(new EventsAdapter(day.getEvents(), act));
+        RecyclerView.LayoutManager layout = new LinearLayoutManager(act, LinearLayoutManager.VERTICAL, false);
+        holder.layout.setLayoutManager(layout);
+
+        holder.text.setText(day.toString());
         return view;
     }
-
 }

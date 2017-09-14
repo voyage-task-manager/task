@@ -13,8 +13,10 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import models.Day;
+import models.Task;
 
 public class CalendarFragment extends Fragment {
 
@@ -27,14 +29,30 @@ public class CalendarFragment extends Fragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             ArrayList<Day> days = new ArrayList<>();
-            for(int i=bundle.getInt("today"); i<=bundle.getInt("last"); i++) {
+            ArrayList<Task> tasks = bundle.getParcelableArrayList("tasks");
+
+            int today = bundle.getInt("today");
+            for(int i=today; i <= bundle.getInt("last"); i++) {
                 Calendar c = Calendar.getInstance();
                 c.set(Calendar.DAY_OF_MONTH, i);
-                Day d = new Day(c);
+                ArrayList<Task> events = new ArrayList<>(tasksByDay(tasks, i));
+                if (events.size() == 0) continue;
+                Day d = new Day(c, events);
                 days.add(d);
             }
             adapter = new CalendarAdapter(activity, days);
         }
+    }
+
+    public List<Task> tasksByDay (List<Task> tasks, int day) {
+        ArrayList<Task> arr = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        for(Task t : tasks) {
+            calendar.setTime(t.getDate());
+            if (calendar.get(Calendar.DAY_OF_MONTH) == day)
+                arr.add(t);
+        }
+        return arr;
     }
 
     @Override
