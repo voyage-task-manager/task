@@ -5,10 +5,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="colorAccent">@color/colorAccent</item>
-
         <item name="android:listSelector">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorPrimary</item>
         <!--<item name="android:listSelector">@drawable/list_item_selector</item>-->
-
     </style>
 </resources>

@@ -1,6 +1,7 @@
 package com.example.felipe.app;
 
 import android.content.ContentUris;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -26,7 +27,7 @@ import java.util.List;
 import models.Day;
 import models.Task;
 
-public class TabActivity extends AppCompatActivity {
+public class TabActivity extends AppCompatActivity implements CalendarFragment.Listener {
 
     private TextView mTextMessage;
     private BottomNavigationView navigation;
@@ -84,11 +85,11 @@ public class TabActivity extends AppCompatActivity {
     public void calendar () {
         Bundle bundle = new Bundle();
         Calendar c = Calendar.getInstance();
-        List<Task> tasks = readCalendar();
-        Day day = new Day(c);
         bundle.putInt("today", c.get(Calendar.DAY_OF_MONTH));
-        bundle.putInt("last", Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH));
-        bundle.putParcelableArrayList("tasks", new ArrayList<Parcelable>(tasks));
+        bundle.putInt("month", c.get(Calendar.MONTH));
+        bundle.putInt("year", c.get(Calendar.YEAR));
+        bundle.putInt("last", c.getActualMaximum(Calendar.DAY_OF_MONTH));
+        bundle.putParcelableArrayList("days", new ArrayList<Parcelable>( load(c.get(Calendar.MONTH), c.get(Calendar.YEAR)) ));
         CalendarFragment frag = new CalendarFragment();
         frag.setArguments(bundle);
         fm = getSupportFragmentManager();
@@ -99,10 +100,20 @@ public class TabActivity extends AppCompatActivity {
     }
 
     public List<Task> readCalendar() {
+        return readCalendar(Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.YEAR));
+    }
+    public List<Task> readCalendar(int month) {
+        return readCalendar(month, Calendar.getInstance().get(Calendar.YEAR));
+    }
+    public List<Task> readCalendar(int month, int year) {
         Uri.Builder eventsUriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon();
-
-        long dtStart = System.currentTimeMillis();
-        long dtEnd = System.currentTimeMillis() + (24*3600*24*1000);
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, 1);
+        c.set(Calendar.YEAR, year);
+        long dtStart = c.getTimeInMillis();
+        c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+        long dtEnd = c.getTimeInMillis();
 
         ContentUris.appendId(eventsUriBuilder, dtStart);
         ContentUris.appendId(eventsUriBuilder, dtEnd);
@@ -118,20 +129,43 @@ public class TabActivity extends AppCompatActivity {
                 CalendarContract.Events.DISPLAY_COLOR,
                 CalendarContract.Instances.END
         };
+
         cursor = getContentResolver().query(eventsUri, fields, filter, values, CalendarContract.Instances.BEGIN + " ASC");
+        //cursor = CalendarContract.Instances.query(getContentResolver(), fields, dtStart, dtEnd);
+
         return handleCalendar(cursor);
     }
 
     public List<Task> handleCalendar (Cursor cur) {
         List<Task> list = new ArrayList<>();
         while (cur.moveToNext()) {
-            Date date = new Date(cur.getLong(1));
-            Date end = new Date(cur.getLong(3));
             String color = String.format("#%06X", (0xFFFFFF & cur.getInt(2)));
-            Task t = new Task(cur.getString(0), date, color);
-            t.setEnd(end);
+            Task t = new Task(cur.getString(0), cur.getLong(1), color);
+            t.setEnd(cur.getLong(3));
             list.add(t);
         }
         return list;
+    }
+
+    public ArrayList<Day> load () {
+        Calendar c = Calendar.getInstance();
+        return load(c.get(Calendar.MONTH), c.get(Calendar.YEAR));
+    }
+
+    @Override
+    public ArrayList<Day> load(int month, int year) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.DAY_OF_MONTH, 1);
+        List<Task> tasks = readCalendar(month, year);
+        List<Day> list = Day.create(c, c.getActualMaximum(Calendar.DAY_OF_MONTH), tasks);
+        return new ArrayList<>(list);
+    }
+
+    @Override
+    public void callEventRecord() {
+        Intent intent = new Intent(this, CreateEvent.class);
+        startActivity(intent);
     }
 }

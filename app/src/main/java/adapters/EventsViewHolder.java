@@ -1,13 +1,14 @@
-package com.example.felipe.app;
+package adapters;
 
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.felipe.app.R;
+
 /**
- * Created by felipe on 14/09/17.
+ * Created by felipe on 19/09/17.
  */
 
 public class EventsViewHolder extends RecyclerView.ViewHolder {
@@ -23,4 +24,3 @@ public class EventsViewHolder extends RecyclerView.ViewHolder {
         shape = (GradientDrawable) view.findViewById(R.id.circle).getBackground();
     }
 }
-

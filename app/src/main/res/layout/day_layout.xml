@@ -21,7 +21,7 @@
             android:textSize="10dp"
             android:paddingRight="10dp"
             android:textStyle="bold"
-            android:textColor="@color/colorPrimary"
+            android:textColor="#444"
             android:text="SEX, 20 de set"/>
 
         <View
@@ -33,12 +33,12 @@
 
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/events"
         android:orientation="vertical">
-    </android.support.v7.widget.RecyclerView>
+    </ListView>
 
 
 </LinearLayout>

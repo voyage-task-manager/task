@@ -1,12 +1,8 @@
 package com.example.felipe.app;
 
 import android.app.Activity;
-import android.content.ContentUris;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,8 +11,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import adapters.PersonalAdapter;
 import models.Task;
 
 public class MainFragment extends Fragment {

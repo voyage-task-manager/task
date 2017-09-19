@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.felipe.app.CreateEvent">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteX="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:orientation="vertical"
+            android:background="@color/colorPrimary">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp">
+
+                <ImageButton
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Voltar"
+                    app:srcCompat="@drawable/ic_back_black_24px"
+                    android:tint="#fff"
+                    android:onClick="close"
+                    android:background="@android:color/transparent"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="textEnd"
+                    android:gravity="end"
+                    android:textAllCaps="true"
+                    android:text="@string/salvar"
+                    android:textSize="15dp"
+                    android:textColor="#fff"/>
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/event_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text|textNoSuggestions"
+                android:textSize="15.5dp"
+                android:textCursorDrawable="@drawable/color_cursor"
+                android:textColor="#fff"
+                android:textColorHint="#eee"
+                android:padding="10dp"
+                android:background="@android:color/transparent"
+                android:hint="@string/task_name"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/event_date"
+                android:background="@android:color/transparent"
+                android:inputType="datetime"
+                android:padding="10dp"
+                android:textSize="15dp"
+                android:textAlignment="textStart"
+                android:layout_gravity="start"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:clickable="true"
+                android:hint="@string/date_hint"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

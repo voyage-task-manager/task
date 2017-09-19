@@ -11,18 +11,18 @@ import java.util.Date;
 
 public class Task implements Parcelable {
     private String title;
-    private Date date;
-    private Date end;
+    private long date;
+    private long end;
     private String description;
     private String color;
 
-    public Task (String title, Date date, String color) {
+    public Task (String title, long date, String color) {
         this.title = title;
         this.date = date;
         this.color = color;
     }
 
-    public Task (String title, Date date) {
+    public Task (String title, long date) {
         this.title = title;
         this.date = date;
         this.color = "#ff0000";
@@ -66,19 +66,19 @@ public class Task implements Parcelable {
         return title;
     }
 
-    public Date getDate() { return date; }
+    public long getDate() { return date; }
 
-    public void setDate(Date date) { this.date = date; }
+    public void setDate(long date) { this.date = date; }
 
     public String getColor() {
         return color;
     }
 
-    public void setEnd(Date end) {
+    public void setEnd(long end) {
         this.end = end;
     }
 
-    public Date getEnd() {
+    public long getEnd() {
         return end;
     }
 }
