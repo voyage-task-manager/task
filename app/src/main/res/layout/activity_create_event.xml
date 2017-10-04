@@ -38,13 +38,15 @@
                     android:tint="#fff"
                     android:onClick="close"
                     android:background="@android:color/transparent"/>
-                <TextView
+                <Button
                     android:layout_width="match_parent"
+                    android:background="@android:color/transparent"
                     android:layout_height="wrap_content"
                     android:textAlignment="textEnd"
                     android:gravity="end"
                     android:textAllCaps="true"
                     android:text="@string/salvar"
+                    android:onClick="createEvent"
                     android:textSize="15dp"
                     android:textColor="#fff"/>
             </LinearLayout>
@@ -66,24 +68,177 @@
         </LinearLayout>
 
         <LinearLayout
+            android:orientation="vertical"
+            android:divider="@drawable/divider"
+            android:dividerPadding="5dp"
+            android:showDividers="middle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <Button
-                android:id="@+id/event_date"
-                android:background="@android:color/transparent"
-                android:inputType="datetime"
-                android:padding="10dp"
-                android:textSize="15dp"
-                android:textAlignment="textStart"
-                android:layout_gravity="start"
-                android:layout_height="wrap_content"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:clickable="true"
-                android:hint="@string/date_hint"/>
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_calendar_black_24dp"
+                    android:tint="@color/text"
+                    android:paddingTop="12dp"
+                    android:paddingLeft="12dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="15dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/event_date"
+                        android:background="@android:color/transparent"
+                        android:padding="10dp"
+                        android:textAllCaps="false"
+                        android:textStyle="normal"
+                        android:textAlignment="textStart"
+                        android:layout_gravity="start"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:textColor="@color/text"
+                        android:hint="@string/date_hint"/>
+
+                    <Button
+                        android:id="@+id/event_hour"
+                        android:textAllCaps="false"
+                        android:textStyle="normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:layout_weight="1"
+                        android:textColor="@color/text"
+                        android:contentDescription="@color/text"
+                        android:hint="18:00"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_clock_black_24px"
+                    android:tint="@color/text"
+                    android:paddingTop="12dp"
+                    android:paddingLeft="12dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="15dp"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/estimate_picker"
+                        android:background="@android:color/transparent"
+                        android:paddingTop="14dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:textAllCaps="false"
+                        android:textSize="14dp"
+                        android:inputType="numberSigned"
+                        android:textStyle="normal"
+                        android:textAlignment="textStart"
+                        android:layout_gravity="start"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:textColor="@color/text"
+                        android:hint="@string/total_time"/>
+
+                    <Spinner
+                        android:layout_marginTop="14dp"
+                        android:paddingBottom="10dp"
+                        android:spinnerMode="dialog"
+                        android:tooltipText="Período"
+                        android:textColor="@color/text"
+                        android:layout_weight="2"
+                        android:id="@+id/period_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <!--<Button
+                        android:textAllCaps="false"
+                        android:textStyle="normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:layout_weight="1"
+                        android:textColor="@color/text"
+                        android:contentDescription="@color/text"
+                        android:hint="18:00"/>-->
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"></View>
+
+            <!--<LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:background="@drawable/round"
+                    android:tint="@color/text"
+                    android:layout_marginTop="19dp"
+                    android:layout_marginLeft="19dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="15dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/event_diff"
+                        android:padding="15dp"
+                        android:clickable="true"
+                        android:textAllCaps="false"
+                        android:textAlignment="textStart"
+                        android:layout_gravity="start"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textColor="@color/text"
+                        android:text="Dificuldade da tarefa"/>
+                </LinearLayout>
+            </LinearLayout>-->
 
         </LinearLayout>
+        <!--<TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/time_task"
+            android:textAlignment="center"
+            android:layout_gravity="center"/>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/diff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </android.support.v4.view.ViewPager>-->
 
     </LinearLayout>
 

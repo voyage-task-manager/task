@@ -17,4 +17,12 @@
     <string name="salvar">Salvar</string>
     <string name="task_name">Nome da tarefa</string>
     <string name="date_hint">Data da tarefa</string>
+    <string name="time_task">Quanto tempo levarei para terminar esta tarefa?</string>
+    <string name="total_time">Tempo total estimado</string>
+    <string name="settings">Configurações</string>
+    <string name="settings_hour">Configurações de horário</string>
+    <string name="inactve_days">Dias ativos na semana</string>
+    <string name="settings_wake">Horário de despertar</string>
+    <string name="save">Salvar</string>
+    <string name="recalc">Refazendo cálculos</string>
 </resources>

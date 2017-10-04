@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import static java.lang.Math.ceil;
+
 /**
  * Created by felipe on 11/09/17.
  */
@@ -21,14 +23,20 @@ public class Day implements Parcelable {
     private String week;
     private int month;
     private List<Task> events;
+    private final float all = 16;
+    private int[] freeHour;
     private int year;
+    private float free;
+
+    public static String [] months;
+
+    static {
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        months = dfs.getMonths();
+    }
 
     public Day(Calendar calendar) {
-        this.number = calendar.get(Calendar.DAY_OF_MONTH);
-        this.week = getWeek(calendar);
-        this.month = calendar.get(Calendar.MONTH);
-        this.events = new ArrayList<>();
-        this.year = calendar.get(Calendar.YEAR);
+        this(calendar, new ArrayList<Task>());
     }
 
     public Day(Calendar calendar, List<Task> events) {
@@ -36,7 +44,7 @@ public class Day implements Parcelable {
         this.week = getWeek(calendar);
         this.month = calendar.get(Calendar.MONTH);
         this.year = calendar.get(Calendar.YEAR);
-        this.events = events;
+        this.setEvents(events);
     }
 
     protected Day(Parcel in) {
@@ -45,6 +53,22 @@ public class Day implements Parcelable {
         month = in.readInt();
         events = in.createTypedArrayList(Task.CREATOR);
         year = in.readInt();
+        free = in.readFloat();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(number);
+        dest.writeString(week);
+        dest.writeInt(month);
+        dest.writeTypedList(events);
+        dest.writeInt(year);
+        dest.writeFloat(free);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<Day> CREATOR = new Creator<Day>() {
@@ -70,11 +94,55 @@ public class Day implements Parcelable {
     public int getMonth() { return month; }
     public void setMonth(int mounth) { this.month = mounth; }
     public List<Task> getEvents() { return events; }
-    public void setEvents(List<Task> events) { this.events = events; }
+
+    public void setEvents(List<Task> events) {
+        free = all;
+        int lunchTime = 2;
+        freeHour = new int[(int) all+lunchTime];
+        for (int i = 0; i < all+lunchTime; i++)
+            freeHour[i] = 0;
+        freeHour[6] = 1;
+        freeHour[12] = 1;
+
+        this.events = events;
+        for (Task t : events) {
+            if (t.isAllDay())
+                continue;
+            int diff = (int) ceil( (t.getEnd() - t.getDate()) / 3600000 );
+            Calendar c = Calendar.getInstance(TimeZone.getDefault());
+            c.setTimeInMillis(t.getDate());
+            int h = c.get(Calendar.HOUR_OF_DAY);
+            freeHour[h-6] = diff;
+            free -= diff;
+        }
+    }
+
+    public List<int[]> getFreeVector () {
+
+        int index = 0;
+        int start = 0;
+        List<int[]> ret = new ArrayList<>();
+
+        while (index < all + 2) {
+            if (freeHour[index] != 0 && start == 0)
+                index += freeHour[index];
+            else if (freeHour[index] == 0 && start == 0)
+                start = index + 6;
+            else if (freeHour[index] != 0 && start != 0){
+                ret.add(new int[]{ start, index+6 });
+                start = 0;
+                index += freeHour[index];
+            } else
+                index += 1;
+        }
+
+        if (start != 0)
+            ret.add(new int[]{ start, 0 });
+
+        return ret;
+    }
 
     public String getMonth(boolean name) {
-        DateFormatSymbols dfs = new DateFormatSymbols();
-        String[] months = dfs.getMonths();
         return months[ month ];
     }
 
@@ -89,9 +157,13 @@ public class Day implements Parcelable {
 
     public static List<Task> tasksByDay (List<Task> tasks, int day) {
         ArrayList<Task> arr = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Calendar calendar = Calendar.getInstance(TimeZone.getDefault(), Locale.getDefault());
+
         for(Task t : tasks) {
+            if (t.isAllDay())
+                calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+            else
+                calendar.setTimeZone(TimeZone.getDefault());
             calendar.setTimeInMillis(t.getDate());
             if (calendar.get(Calendar.DAY_OF_MONTH) == day)
                 arr.add(t);
@@ -99,12 +171,46 @@ public class Day implements Parcelable {
         return arr;
     }
 
+    public float getFree() {
+        return free;
+    }
+
+    public void setFree(float free) {
+        this.free = free;
+    }
+
+    public Calendar getCalendar(int hour) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, number);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.HOUR_OF_DAY, hour);
+        return c;
+    }
+
     public static List<Day> create(Calendar init, int end, List<Task> tasks) {
+        Calendar e = Calendar.getInstance();
+        e.setTimeInMillis(init.getTimeInMillis());
+        e.set(Calendar.DAY_OF_MONTH, end);
+        return create(init, e, tasks);
+    }
+
+    private static boolean compare(Calendar date1, Calendar date2) {
+        return date1.get(Calendar.DAY_OF_MONTH) == date2.get(Calendar.DAY_OF_MONTH)
+        && date1.get(Calendar.MONTH) == date2.get(Calendar.MONTH)
+        && date1.get(Calendar.YEAR) == date2.get(Calendar.YEAR);
+    }
+
+    public static List<Day> create(Calendar init, Calendar end, List<Task> tasks) {
+        return create(init, end, tasks, false);
+    }
+
+    public static List<Day> create(Calendar init, Calendar end, List<Task> tasks, Boolean allDays) {
         List<Day> arr = new ArrayList<>();
-        for(int i = init.get(Calendar.DAY_OF_MONTH); i <= end; i++) {
-            init.set(Calendar.DAY_OF_MONTH, i);
-            ArrayList<Task> events = new ArrayList<>(tasksByDay(tasks, i));
-            if (events.size() == 0) continue;
+        for(; !compare(init, end); init.add(Calendar.DAY_OF_MONTH, 1)) {
+            ArrayList<Task> events = new ArrayList<>(tasksByDay(tasks, init.get(Calendar.DAY_OF_MONTH)));
+            if (events.size() == 0 && !allDays) continue;
             Day d = new Day(init, events);
             arr.add(d);
         }
@@ -113,19 +219,5 @@ public class Day implements Parcelable {
 
     public String getYear() {
         return "" + year;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(number);
-        parcel.writeString(week);
-        parcel.writeInt(month);
-        parcel.writeTypedList(events);
-        parcel.writeInt(year);
     }
 }

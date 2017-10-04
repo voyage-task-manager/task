@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="period">
+        <item>Horas</item>
+        <item>Dias</item>
+        <item>Meses</item>
+        <item>Anos</item>
+        <item>Décadas</item>
+        <item>Séculos</item>
+        <item>Milênios</item>
+    </string-array>
+</resources>

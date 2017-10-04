@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingRight="0.1in"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/text_day"
+        android:clickable="true"
+        android:text="Seg"
+        android:textAllCaps="true"
+        android:textSize="0.10in"
+        android:paddingTop="0.05in"
+        android:textColor="@color/disabled"
+        android:paddingBottom="0.08in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <View
+        android:id="@+id/bottom_border"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/border"></View>
+
+</LinearLayout>
