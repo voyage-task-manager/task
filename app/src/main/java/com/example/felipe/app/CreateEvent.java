@@ -2,6 +2,7 @@ package com.example.felipe.app;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -19,14 +20,17 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import components.Waiting;
 import models.CalendarProvider;
 import models.Graph;
+import models.Setting;
 import models.Task;
 
 public class CreateEvent extends AppCompatActivity implements View.OnClickListener {
@@ -37,7 +41,7 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
     EditText name_input;
     Calendar calendar;
     Spinner period_spinner;
-    ViewPager pager;
+    Setting setting;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public String format(Calendar calendar) {
@@ -94,6 +98,10 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         calendar = Calendar.getInstance();
         calendar.setTimeZone(TimeZone.getTimeZone("America/Sao_Paulo"));
 
+        setting = new Setting(this);
+        setting = setting.init().get(1);
+
+
         //pager = (ViewPager) findViewById(R.id.diff);
         //pager.setAdapter(new DifficultyAdapter(this));
         name_input = (EditText) findViewById(R.id.event_name);
@@ -134,16 +142,19 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
     /*  */
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void createEvent(View view) {
+
+        Waiting w = new Waiting(this, "Configurando seu tempo");
+
         List<CalendarProvider> calendars = CalendarProvider.calendars(this);
         if (calendars.size() == 0)
             return;
 
-        Graph graph = new Graph(Calendar.getInstance(), calendar, this);
+        Graph graph = new Graph(Calendar.getInstance(), calendar, setting, this);
         Task task = new Task(name_input.getText().toString(), calendar.getTimeInMillis(), calendar.getTimeInMillis() + 3600000);
-
         List<Task> l = graph.organize(task, Integer.parseInt(estimate_picker.getText().toString()));
         if (l != null)
             Log.d("INFO::", "Ate aqui ta tudo bem -> " + l.size());
+
         Calendar c = Calendar.getInstance();
         for (Task t : l) {
             c.setTimeInMillis(t.getDate());
@@ -175,6 +186,7 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         TabActivity.prototype.reload();
         finish();
         */
+        w.close();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)

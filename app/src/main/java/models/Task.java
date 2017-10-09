@@ -23,6 +23,7 @@ public class Task implements Parcelable {
     private String description;
     private String color;
     private boolean allDay;
+    private long _id;
 
     public Task (String title, long start, long end, String color) {
         this.title = title;
@@ -126,6 +127,11 @@ public class Task implements Parcelable {
         }
 
         Uri uri = cr.insert(Events.CONTENT_URI, values);
+        _id = Long.parseLong(uri.getLastPathSegment());
         return uri;
+    }
+
+    public long getID () {
+        return _id;
     }
 }

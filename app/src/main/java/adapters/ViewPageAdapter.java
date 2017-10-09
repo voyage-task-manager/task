@@ -63,26 +63,6 @@ public class ViewPageAdapter extends PagerAdapter {
         ArrayList<Day> days = items.get(position);
         TextView text = (TextView) view.findViewById(R.id.month);
         Day d = days.get(0);
-
-        if (d.getMonth() == (int) Calendar.getInstance().get(Calendar.MONTH)) {
-            int index = 0;
-            int diff = 32;
-            int tod = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-            for (int i = 0; i < items.get(position).size(); i++) {
-                if ( Math.abs(days.get(i).getNumber() - tod) < diff ) {
-                    diff = Math.abs(days.get(i).getNumber() - tod);
-                    index = i;
-                }
-            }
-            final int finalIndex = index;
-            list.post(new Runnable() {
-                @Override
-                public void run() {
-                    list.setSelection(finalIndex);
-                }
-            });
-        }
-
         if (items.get(position).size() > 0) {
             text.setText(d.getMonth(true).toUpperCase() + ", " + d.getYear());
         }

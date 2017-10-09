@@ -1,13 +1,8 @@
 package adapters;
 
 import android.app.Activity;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.felipe.app.R;
@@ -18,11 +13,11 @@ import com.example.felipe.app.R;
 
 public class ViewHolder {
 
-    final LinearLayout layout;
+    final ListView layout;
     final TextView text;
 
     public ViewHolder(View view, Activity act) {
-        layout = (LinearLayout) view.findViewById(R.id.events);
+        layout = (ListView) view.findViewById(R.id.events);
         text = (TextView) view.findViewById(R.id.date);
     }
 }

@@ -48,22 +48,31 @@ public class CalendarFragment extends Fragment {
     }
 
     public void init () {
+        if (month == Calendar.getInstance().get(Calendar.MONTH)) {
+            scrollToDay();
+            return;
+        }
         arr.clear();
         ArrayList<ArrayList<Day>> init = ((Listener) activity).init();
         for(ArrayList<Day> i : init)
             arr.add(i);
-        /*arr.add(((Listener) activity).load( month == 0 ? 11 : month-1, year - (month == 0 ? 1 : 0) ));
-        arr.add(((Listener) activity).load( month, year ));
-        arr.add(((Listener) activity).load( (month+1)%12, year + (month == 11 ? 1 : 0) ));*/
+        month = init.get(1).get(0).getMonth();
         pageAdapter.notifyDataSetChanged();
+    }
 
-        final ListView list = null;// viewPager.getFocusedChild().findViewById(R.id.scroll);
-        /*list.post(new Runnable() {
-            @Override
-            public void run() {
-                list.setSelection(arr.get(1).size()-1);
+    private void scrollToDay() {
+        final ListView list = (ListView) viewPager.findViewById(R.id.scroll);
+        ArrayList<Day> items = arr.get(1);
+        int index = 0;
+        int diff = 32;
+        for (int i = 0; i < items.size(); i++) {
+            Day day = items.get(i);
+            if ( Math.abs(day.getNumber() - today) < diff ) {
+                diff = Math.abs(day.getNumber() - today);
+                index = i;
             }
-        });*/
+        }
+        list.smoothScrollToPositionFromTop(index, 0);
     }
 
     @Override
@@ -71,13 +80,12 @@ public class CalendarFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         if (bundle != null) {
-            //ArrayList<Day> days = bundle.getParcelableArrayList("days");
             arr = new ArrayList<>();
+            pageAdapter = new ViewPageAdapter(activity, arr);
+            init();
             today = bundle.getInt("today");
             month = bundle.getInt("month");
             year = bundle.getInt("year");
-            pageAdapter = new ViewPageAdapter(activity, arr);
-            //init();
         }
     }
 
@@ -92,8 +100,8 @@ public class CalendarFragment extends Fragment {
                 ((Listener) activity).callEventRecord();
             }
         });
-        init();
         viewPager.setCurrentItem(1);
+        viewPager.setOffscreenPageLimit(3);
         listener(viewPager);
         return view;
     }
@@ -103,16 +111,13 @@ public class CalendarFragment extends Fragment {
             boolean block = false;
             @Override
             public void onPageSelected(int position) {
-
                 if (block) {
                     block = false;
                     return;
                 }
-
                 int var = position - page;
                 page = position;
                 month += var;
-
                 if (var > 0) {
                     int a = (month + 1)%12;
                     int y = (month + 1 > 11) ? year + 1 : year;
@@ -128,10 +133,8 @@ public class CalendarFragment extends Fragment {
                     int y = a == 11 ? year-1 : year;
                     arr.add( 0, ((Listener) activity).load( a, y ));
                 }
-
                 if (var < 0) arr.remove(arr.size() - 1);
                 pageAdapter.notifyDataSetChanged();
-
                 page = 1;
                 block = true;
                 pager.setCurrentItem(page);

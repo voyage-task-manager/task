@@ -7,7 +7,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.felipe.app.R;
@@ -60,7 +63,6 @@ public class CalendarAdapter extends BaseAdapter {
 
         if( convertView == null) {
             view = act.getLayoutInflater().inflate(R.layout.day_layout, parent, false);
-            EventsAdapter.init(act, (ViewGroup) view);
             holder = new ViewHolder(view, act);
             view.setTag(holder);
         } else {
@@ -70,13 +72,35 @@ public class CalendarAdapter extends BaseAdapter {
 
         Day day = days.get(position);
         List<Task> events = day.getEvents();
-        holder.layout.removeAllViews();
-        for (Task t : events)
-            holder.layout.addView( EventsAdapter.inflate(t) );
+        holder.layout.setAdapter(new EventsAdapter(act, events));
+        setListViewHeightBasedOnChildren(holder.layout);
+
         view.findViewById(R.id.events).setTag(position);
         //holder.layout.setAdapter(new EventsAdapter(day.getEvents(), act));
 
         holder.text.setText(day.toString());
         return view;
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null)
+            return;
+
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
+        int totalHeight = 0;
+        View view = null;
+
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            view = listAdapter.getView(i, view, listView);
+            if (i == 0)
+                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, AbsListView.LayoutParams.WRAP_CONTENT));
+            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += view.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
     }
 }

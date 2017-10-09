@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="wrap_content"
-    android:padding="0.5in"
+    android:paddingRight="0.2in"
+    android:gravity="center"
     android:layout_height="wrap_content">
 
     <ProgressBar
-        android:layout_width="1in"
-        android:layout_height="1in"
+        android:layout_width="0.7in"
+        android:layout_height="0.7in"
         android:padding="0.2in"
         android:indeterminate="true" />
 
     <TextView
+        android:id="@+id/dialog_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"

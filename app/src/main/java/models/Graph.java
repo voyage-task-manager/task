@@ -18,17 +18,19 @@ public class Graph {
 
     private Calendar init, end;
     private List<Day> list;
+    Setting setting;
 
-    public Graph (Calendar init, Calendar end, Activity activity) {
+    public Graph (Calendar init, Calendar end, Setting setting, Activity activity) {
+        this.setting = setting;
         this.init = init;
         this.end = end;
         List<Task> l = CalendarProvider.readCalendar(init, end, activity.getContentResolver());
-        list = Day.create(init, end, l, true);
+        list = Day.create(init, end, l, true, setting);
 
         Collections.sort(list, new Comparator<Day>() {
             @Override
             public int compare(Day day, Day t1) {
-                return day.getFree() < t1.getFree() ? -1 : (day.getFree() > t1.getFree() ? +1 : 0);
+            return day.getFree() < t1.getFree() ? -1 : (day.getFree() > t1.getFree() ? +1 : 0);
             }
         });
 
