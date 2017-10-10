@@ -109,8 +109,10 @@ public class Day implements Parcelable {
 
         if (setting != null) {
             wake = Integer.parseInt( setting.getWake()[0].split(":")[0] );
+            dinner = Integer.parseInt( setting.getDinner()[0].split(":")[0] );
+            lunch = Integer.parseInt( setting.getLaunch()[0].split(":")[0] );
             int sleep = Integer.parseInt( setting.getSleep()[0].split(":")[0] );
-            all = sleep - wake - lunchTime;
+            all = (sleep == 0 ? 24 : sleep) - wake - lunchTime;
         }
 
         free = all;
@@ -125,6 +127,8 @@ public class Day implements Parcelable {
             if (t.isAllDay())
                 continue;
             int diff = (int) ceil( (t.getEnd() - t.getDate()) / 3600000 );
+            if (diff < 0)
+                Log.d("INFO::", "NEGATIVE FDP: " + t.getTitle() + " " + t.getEnd() + " " + t.getDate());
             Calendar c = Calendar.getInstance(TimeZone.getDefault());
             c.setTimeInMillis(t.getDate());
             int h = c.get(Calendar.HOUR_OF_DAY);
@@ -143,6 +147,9 @@ public class Day implements Parcelable {
         List<int[]> ret = new ArrayList<>();
 
         while (index < all + lunchTime) {
+            //String d = "";
+            //for (int i=0; i<freeHour.length; i++) d += freeHour[i] + "; " ;
+            //Log.d("INFO::", "INDEX " + d);
             if (freeHour[index] != 0 && start == 0)
                 index += freeHour[index];
             else if (freeHour[index] == 0 && start == 0)

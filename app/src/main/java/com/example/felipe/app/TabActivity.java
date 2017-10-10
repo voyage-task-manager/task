@@ -116,7 +116,7 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
     public void calendar () {
         if (atual instanceof CalendarFragment) {
             Calendar c = Calendar.getInstance();
-            ((CalendarFragment) atual).atualize();
+            ((CalendarFragment) atual).init();
             return;
         }
 
@@ -142,7 +142,7 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
     }
 
     @Override
-    public ArrayList<Day> load(int month, int year) {
+    public ArrayList<Day> load (int month, int year) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.MONTH, month);
         c.set(Calendar.YEAR, year);

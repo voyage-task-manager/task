@@ -192,8 +192,7 @@ public class ConfigFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof Activity)
             activity = (Activity) context;
-        Setting s = new Setting(context);
-        settings = s.init(); // 0 - Default; 1 - Editable
+        settings = Setting.init(context); // 0 - Default; 1 - Editable
         mySetting = settings.get(1);
     }
 

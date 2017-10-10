@@ -37,6 +37,7 @@ public class CalendarFragment extends Fragment {
     private ViewPageAdapter pageAdapter;
 
     public void atualize() {
+        month = -1;
         init();
     }
 

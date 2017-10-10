@@ -118,7 +118,7 @@ public class Task implements Parcelable {
         values.put(Events.DTSTART, date);
         values.put(Events.DTEND, end);
         values.put(Events.TITLE, title);
-        values.put(Events.DESCRIPTION, "Group workout");
+        values.put(Events.DESCRIPTION, description);
         values.put(Events.CALENDAR_ID, calendarID);
         values.put(Events.EVENT_TIMEZONE, "UTC");
 

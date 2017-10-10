@@ -56,7 +56,7 @@ public class Graph {
                 int disp = (int) Math.ceil( Math.min(v[1] - v[0], diff) );
                 diff -= disp;
                 total -= disp;
-                Task task = new Task(t.getTitle() + " - Fragmento " + (char)(i + 'a'), item.getCalendar(v[0]).getTimeInMillis(), item.getCalendar(v[0] + disp).getTimeInMillis());
+                Task task = new Task(t.getTitle() + " - Tarefa parcial " + (char)(i + 'A'), item.getCalendar(v[0]).getTimeInMillis(), item.getCalendar(v[0] + disp).getTimeInMillis());
                 org.add(task);
             }
         }

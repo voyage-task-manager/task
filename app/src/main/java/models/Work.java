@@ -1,10 +1,8 @@
 package models;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import database.Schema;
 import database.WorkSchema;
 
 /**
@@ -25,11 +23,8 @@ public class Work {
         this.context = context;
     }
 
-    public boolean record () {
-        db = schema.getWritableDatabase();
-        ContentValues content = getContent();
-        long res = db.insert(Schema.TABLE, null, content);
-        return res != -1;
+    public boolean save () {
+        return schema.record(this);
     }
 
     public Task getTask() {
@@ -54,13 +49,5 @@ public class Work {
 
     public void setReference(Task reference) {
         this.reference = reference;
-    }
-
-    private ContentValues getContent () {
-        ContentValues content = new ContentValues();
-        content.put(WorkSchema.EVENT, task.getID());
-        content.put(WorkSchema.PAYLOAD, payload);
-        content.put(WorkSchema.REFERENCES, reference.getID());
-        return content;
     }
 }

@@ -2,14 +2,14 @@ package com.example.felipe.app;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +20,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +31,7 @@ import models.CalendarProvider;
 import models.Graph;
 import models.Setting;
 import models.Task;
+import models.Work;
 
 public class CreateEvent extends AppCompatActivity implements View.OnClickListener {
 
@@ -97,9 +97,7 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         Utils.setSystemBarLight(this, ContextCompat.getColor(this, R.color.colorPrimaryDarker));
         calendar = Calendar.getInstance();
         calendar.setTimeZone(TimeZone.getTimeZone("America/Sao_Paulo"));
-
-        setting = new Setting(this);
-        setting = setting.init().get(1);
+        setting = Setting.init(this).get(1);
 
 
         //pager = (ViewPager) findViewById(R.id.diff);
@@ -141,9 +139,9 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
 
     /*  */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void createEvent(View view) {
-
-        Waiting w = new Waiting(this, "Configurando seu tempo");
+    public void createEvent(View view) throws InterruptedException {
+        final Waiting w = new Waiting(this, "Configurando seu tempo");
+        Handler h = new Handler();
 
         List<CalendarProvider> calendars = CalendarProvider.calendars(this);
         if (calendars.size() == 0)
@@ -151,42 +149,44 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
 
         Graph graph = new Graph(Calendar.getInstance(), calendar, setting, this);
         Task task = new Task(name_input.getText().toString(), calendar.getTimeInMillis(), calendar.getTimeInMillis() + 3600000);
-        List<Task> l = graph.organize(task, Integer.parseInt(estimate_picker.getText().toString()));
-        if (l != null)
-            Log.d("INFO::", "Ate aqui ta tudo bem -> " + l.size());
-
-        Calendar c = Calendar.getInstance();
-        for (Task t : l) {
-            c.setTimeInMillis(t.getDate());
-            String start = String.format(Locale.getDefault(), "%tB, %td %tH:%tM até ", c.getTime(), c.getTime(), c.getTime(), c.getTime());
-            c.setTimeInMillis(t.getEnd());
-            start += String.format(Locale.getDefault(), "%tH:%tM", c.getTime(), c.getTime());
-            Log.d("INFO::", t.getTitle() + " " + start);
+        int estimative = Integer.parseInt(estimate_picker.getText().toString());
+        List<Task> l = graph.organize(task, estimative);
+        if (task.record(this, calendars.get(1).getId()) == null) {
+            Log.d("INFO::", "Erro ao salvar no calendar");
+            return;
         }
-        /*if (task.record(this,calendars.get(0).getId()) == null);
-            return;*/
-        /*
-        CalendarProvider c = calendars.get(0);
-
-        ContentResolver cr = getContentResolver();
-        ContentValues values = new ContentValues();
-        values.put(Events.DTSTART, calendar.getTimeInMillis());
-        values.put(Events.DTEND, calendar.getTimeInMillis() + 3600000);
-        values.put(Events.TITLE, name_input.getText().toString());
-        values.put(Events.DESCRIPTION, "Group workout");
-        values.put(Events.CALENDAR_ID, c.getId());
-        values.put(Events.EVENT_TIMEZONE, "UTC");
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+        Work work = new Work(this);
+        work.setPayload(estimative);
+        work.setTask(task);
+        work.setReference(null);
+        if (!work.save()) {
+            Log.d("INFO::", "Erro ao salvar do DB :((");
             return;
         }
 
-        Uri uri = cr.insert(Events.CONTENT_URI, values);
-        Toast.makeText(this, "Tarefa cadastrada :)", Toast.LENGTH_LONG).show();
+
+        work.setReference(task);
+        for (Task t : l) {
+            if (t.record(this,calendars.get(0).getId()) == null) {
+                Log.d("INFO::", "Erro ao salvar o fragmento no calendar :((");
+                return;
+            }
+            work.setTask(t);
+            if (!work.save()) {
+                Log.d("INFO::", "Erro ao salvar o fragmento no DB :((");
+                return;
+            }
+            Log.d("INFO::", "\"Salvo\": " + t.getTitle());
+        }
+
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                w.close();
+            }
+        }, 2000);
         TabActivity.prototype.reload();
         finish();
-        */
-        w.close();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
