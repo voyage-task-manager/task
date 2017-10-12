@@ -2,13 +2,16 @@ package models;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.CalendarContract.Events;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import java.util.Date;
 
@@ -30,6 +33,7 @@ public class Task implements Parcelable {
         this.date = start;
         this.end = end;
         this.color = color;
+        this.description = "Description default";
     }
 
     public Task (String title, long start, long end) {
@@ -47,6 +51,7 @@ public class Task implements Parcelable {
     protected Task(Parcel in) {
         title = in.readString();
         date = in.readLong();
+        _id = in.readLong();
         end = in.readLong();
         description = in.readString();
         color = in.readString();
@@ -57,6 +62,7 @@ public class Task implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title);
         dest.writeLong(date);
+        dest.writeLong(_id);
         dest.writeLong(end);
         dest.writeString(description);
         dest.writeString(color);
@@ -112,7 +118,7 @@ public class Task implements Parcelable {
         this.allDay = allDay == 1;
     }
 
-    public Uri record (Activity activity, int calendarID) {
+    public long record (Activity activity, int calendarID) {
         ContentResolver cr = activity.getContentResolver();
         ContentValues values = new ContentValues();
         values.put(Events.DTSTART, date);
@@ -123,15 +129,35 @@ public class Task implements Parcelable {
         values.put(Events.EVENT_TIMEZONE, "UTC");
 
         if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            return null;
+            return -1;
         }
 
         Uri uri = cr.insert(Events.CONTENT_URI, values);
-        _id = Long.parseLong(uri.getLastPathSegment());
-        return uri;
+        _id = ContentUris.parseId(uri);
+        return _id;
+    }
+
+    public int drop (Context context) {
+        Uri deleteUri = null;
+        deleteUri = ContentUris.withAppendedId(Events.CONTENT_URI, _id);
+        int rows = context.getContentResolver().delete(deleteUri, null, null);
+        Log.i("INFO::", "Rows deleted: " + rows);
+        return rows;
     }
 
     public long getID () {
         return _id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setID(long _id) {
+        this._id = _id;
     }
 }

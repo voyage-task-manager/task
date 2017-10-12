@@ -35,13 +35,14 @@ import models.Work;
 
 public class CreateEvent extends AppCompatActivity implements View.OnClickListener {
 
-    Button date_input;
-    Button event_hour;
-    EditText estimate_picker;
-    EditText name_input;
-    Calendar calendar;
-    Spinner period_spinner;
-    Setting setting;
+    private Button date_input;
+    private Button event_hour;
+    private EditText estimate_picker;
+    private EditText name_input;
+    private Calendar calendar;
+    private Spinner period_spinner;
+    private Setting setting;
+    private Waiting w;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public String format(Calendar calendar) {
@@ -140,8 +141,7 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
     /*  */
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void createEvent(View view) throws InterruptedException {
-        final Waiting w = new Waiting(this, "Configurando seu tempo");
-        Handler h = new Handler();
+        w = new Waiting(this, "Configurando seu tempo");
 
         List<CalendarProvider> calendars = CalendarProvider.calendars(this);
         if (calendars.size() == 0)
@@ -151,10 +151,12 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         Task task = new Task(name_input.getText().toString(), calendar.getTimeInMillis(), calendar.getTimeInMillis() + 3600000);
         int estimative = Integer.parseInt(estimate_picker.getText().toString());
         List<Task> l = graph.organize(task, estimative);
-        if (task.record(this, calendars.get(1).getId()) == null) {
+        long _id = task.record(this, calendars.get(1).getId());
+        if (_id == -1) {
             Log.d("INFO::", "Erro ao salvar no calendar");
             return;
         }
+        Log.d("INFO::", "GRRRR " + _id);
         Work work = new Work(this);
         work.setPayload(estimative);
         work.setTask(task);
@@ -167,7 +169,8 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
 
         work.setReference(task);
         for (Task t : l) {
-            if (t.record(this,calendars.get(0).getId()) == null) {
+            _id = t.record(this,calendars.get(0).getId());
+            if (_id == -1) {
                 Log.d("INFO::", "Erro ao salvar o fragmento no calendar :((");
                 return;
             }
@@ -179,12 +182,6 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
             Log.d("INFO::", "\"Salvo\": " + t.getTitle());
         }
 
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                w.close();
-            }
-        }, 2000);
         TabActivity.prototype.reload();
         finish();
     }
@@ -194,5 +191,11 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
     public void onClick(View view) {
         DatePickerDialog picker = new DatePickerDialog(this, getListener(view), calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         picker.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        w.close();
     }
 }

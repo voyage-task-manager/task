@@ -1,6 +1,7 @@
 package adapters;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
@@ -9,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.felipe.app.CreateEvent;
+import com.example.felipe.app.EventActivity;
 import com.example.felipe.app.R;
 
 import java.util.Calendar;
@@ -23,7 +26,7 @@ import models.Task;
 
 public class EventsAdapter extends BaseAdapter {
 
-    private Activity act;
+    private final Activity act;
     private List<Task> tasks;
 
     public EventsAdapter(Activity act, List<Task> tasks) {
@@ -62,6 +65,7 @@ public class EventsAdapter extends BaseAdapter {
         }
 
         Task item = tasks.get(i);
+        view.setOnClickListener(getListener(item));
         holder.title.setText(item.getTitle());
         holder.shape.setColor(Color.parseColor(item.getColor()));
 
@@ -77,6 +81,16 @@ public class EventsAdapter extends BaseAdapter {
         return view;
     }
 
+    private View.OnClickListener getListener (final Task task) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(act, EventActivity.class);
+                intent.putExtra("TASK", task);
+                act.startActivity(intent);
+            }
+        };
+    }
     /*
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

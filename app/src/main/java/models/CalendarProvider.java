@@ -86,7 +86,9 @@ public class CalendarProvider {
                 CalendarContract.Instances.BEGIN, // 1
                 CalendarContract.Events.DISPLAY_COLOR, // 2
                 CalendarContract.Instances.END, // 3
-                CalendarContract.Events.ALL_DAY // 4
+                CalendarContract.Events.ALL_DAY, // 4
+                CalendarContract.Events.DESCRIPTION, // 5
+                "event_id", // 6
         };
 
         cursor = resolver.query(eventsUri, fields, filter, values, CalendarContract.Instances.BEGIN + " ASC");
@@ -111,6 +113,8 @@ public class CalendarProvider {
             Task t = new Task(cur.getString(0), cur.getLong(1), color);
             t.setEnd(cur.getLong(3));
             t.setAllDay(cur.getInt(4));
+            t.setDescription(cur.getString(5));
+            t.setID(cur.getLong(6));
             list.add(t);
         }
         return list;

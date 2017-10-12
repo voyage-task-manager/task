@@ -132,6 +132,7 @@ public class Day implements Parcelable {
             Calendar c = Calendar.getInstance(TimeZone.getDefault());
             c.setTimeInMillis(t.getDate());
             int h = c.get(Calendar.HOUR_OF_DAY);
+            if (h - wake < 0) continue;
             freeHour[ h - wake ] = diff;
             free -= diff;
         }
@@ -147,9 +148,6 @@ public class Day implements Parcelable {
         List<int[]> ret = new ArrayList<>();
 
         while (index < all + lunchTime) {
-            //String d = "";
-            //for (int i=0; i<freeHour.length; i++) d += freeHour[i] + "; " ;
-            //Log.d("INFO::", "INDEX " + d);
             if (freeHour[index] != 0 && start == 0)
                 index += freeHour[index];
             else if (freeHour[index] == 0 && start == 0)
