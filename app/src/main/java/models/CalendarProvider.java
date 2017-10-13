@@ -12,11 +12,12 @@ import android.os.Parcelable;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.Locale;
 
 /**
  * Created by felipe on 26/09/17.
@@ -34,13 +35,13 @@ public class CalendarProvider implements Parcelable {
             Calendars.CALENDAR_COLOR // 6
     };
 
-    private int id;
+    private long id;
     private String account, name, owner, type, level, color;
 
     public CalendarProvider () {}
 
     protected CalendarProvider(Parcel in) {
-        id = in.readInt();
+        id = in.readLong();
         account = in.readString();
         name = in.readString();
         owner = in.readString();
@@ -62,17 +63,16 @@ public class CalendarProvider implements Parcelable {
     };
 
     public static List<CalendarProvider> calendars (Activity act) {
+        return calendars(act, "");
+    }
+
+    public static List<CalendarProvider> calendars (Activity act, String filter) {
         Cursor cur = null;
         ContentResolver cr = act.getContentResolver();
         Uri uri = CalendarContract.Calendars.CONTENT_URI;
         if (ActivityCompat.checkSelfPermission(act, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED)
             return new ArrayList<>();
-
-
-        String filter = Calendars.CALENDAR_ACCESS_LEVEL + " = ?";
-        String[] params = new String[]{"700"};
-
-        cur = cr.query(uri, EVENT_PROJECTION, filter, params, null);
+        cur = cr.query(uri, EVENT_PROJECTION, filter, null, null);
         return readCalendar(cur);
     }
 
@@ -132,6 +132,7 @@ public class CalendarProvider implements Parcelable {
                 CalendarContract.Events.ALL_DAY, // 4
                 CalendarContract.Events.DESCRIPTION, // 5
                 "event_id", // 6
+                CalendarContract.Events.CALENDAR_ID // 7
         };
 
         cursor = resolver.query(eventsUri, fields, filter, values, CalendarContract.Instances.BEGIN + " ASC");
@@ -157,6 +158,7 @@ public class CalendarProvider implements Parcelable {
             t.setAllDay(cur.getInt(4));
             t.setDescription(cur.getString(5));
             t.setID(cur.getLong(6));
+            t.setCalendarID(cur.getLong(7));
             list.add(t);
         }
         return list;
@@ -178,7 +180,7 @@ public class CalendarProvider implements Parcelable {
         this.level = level;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -218,16 +220,25 @@ public class CalendarProvider implements Parcelable {
         this.color = color;
     }
 
-    @Override
+        @Override
     public int describeContents() {
         return 0;
     }
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(id);
+        parcel.writeLong(id);
         parcel.writeString(account);
         parcel.writeString(name);
         parcel.writeString(owner);
+    }
+
+    public static CalendarProvider find(Activity act, long calendarID) {
+        List<CalendarProvider> list = calendars(act, Calendars._ID + " = " + calendarID);
+        return list.size() > 0 ? list.get(0) : null;
+    }
+
+    public static List<CalendarProvider> myCalendars(Activity act) {
+        return calendars(act, Calendars.CALENDAR_ACCESS_LEVEL + " = 700");
     }
 }

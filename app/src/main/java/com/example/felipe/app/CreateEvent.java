@@ -131,7 +131,7 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         period_spinner = (Spinner) findViewById(R.id.period_spinner);
         active_plan = (Switch) findViewById(R.id.active_plan);
         active_plan.setOnCheckedChangeListener(toggle());
-        calendars = CalendarProvider.calendars(this);
+        calendars = CalendarProvider.myCalendars(this);
         event_calendar.setOnClickListener(showModal());
         toggle(false);
         setCalendar(calendars.get(0));
@@ -189,13 +189,16 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         if (calendars.size() == 0)
             return;
 
-        Graph graph = new Graph(Calendar.getInstance(), calendar, setting, this);
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, 1);
+        Graph graph = new Graph(c, calendar, setting, this);
         Task task = new Task(name_input.getText().toString(), calendar.getTimeInMillis(), calendar.getTimeInMillis() + 3600000);
         task.setDescription(event_description.getText() != null ? event_description.getText().toString() : "");
+        task.setCalendarID(calendarProvider.getId());
 
         // Não planeja a agenda do usuário
         if (!active_plan.isChecked()) {
-            long _id = task.record(this, calendars.get(1).getId());
+            long _id = task.record(this);
             if (_id == -1)
                 Log.d("INFO::", "Erro ao salvar no calendar");
             close();
@@ -217,7 +220,7 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
             return;
         }
 
-        long _id = task.record(this, calendarProvider.getId());
+        long _id = task.record(this);
         if (_id == -1) {
             Log.d("INFO::", "Erro ao salvar no calendar");
             close();
@@ -230,18 +233,22 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         work.setReference(-1);
         if (!work.save()) {
             Log.d("INFO::", "Erro ao salvar do DB :((");
+            close();
             return;
         }
+
         work.setReference(task.getID());
         for (Task t : l) {
-            _id = t.record(this,calendars.get(0).getId());
+            _id = t.record(this);
             if (_id == -1) {
                 Log.d("INFO::", "Erro ao salvar o fragmento no calendar :((");
+                close();
                 return;
             }
             work.setTask(t.getID());
             if (!work.save()) {
                 Log.d("INFO::", "Erro ao salvar o fragmento no DB :((");
+                close();
                 return;
             }
         }

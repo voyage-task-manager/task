@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by felipe on 01/09/17.
@@ -27,13 +28,14 @@ public class Task implements Parcelable {
     private String color;
     private boolean allDay;
     private long _id;
+    private long calendarId;
 
     public Task (String title, long start, long end, String color) {
         this.title = title;
         this.date = start;
         this.end = end;
         this.color = color;
-        this.description = "Description default";
+        this.description = "";
     }
 
     public Task (String title, long start, long end) {
@@ -51,27 +53,12 @@ public class Task implements Parcelable {
     protected Task(Parcel in) {
         title = in.readString();
         date = in.readLong();
-        _id = in.readLong();
         end = in.readLong();
         description = in.readString();
         color = in.readString();
         allDay = in.readByte() != 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeLong(date);
-        dest.writeLong(_id);
-        dest.writeLong(end);
-        dest.writeString(description);
-        dest.writeString(color);
-        dest.writeByte((byte) (allDay ? 1 : 0));
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        _id = in.readLong();
+        calendarId = in.readLong();
     }
 
     public static final Creator<Task> CREATOR = new Creator<Task>() {
@@ -85,6 +72,23 @@ public class Task implements Parcelable {
             return new Task[size];
         }
     };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeLong(date);
+        dest.writeLong(end);
+        dest.writeString(description);
+        dest.writeString(color);
+        dest.writeByte((byte) (allDay ? 1 : 0));
+        dest.writeLong(_id);
+        dest.writeLong(calendarId);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
     public String toString () {
         return title;
@@ -118,14 +122,15 @@ public class Task implements Parcelable {
         this.allDay = allDay == 1;
     }
 
-    public long record (Activity activity, int calendarID) {
+    public long record (Activity activity) {
         ContentResolver cr = activity.getContentResolver();
         ContentValues values = new ContentValues();
+
         values.put(Events.DTSTART, date);
         values.put(Events.DTEND, end);
         values.put(Events.TITLE, title);
         values.put(Events.DESCRIPTION, description);
-        values.put(Events.CALENDAR_ID, calendarID);
+        values.put(Events.CALENDAR_ID, calendarId);
         values.put(Events.EVENT_TIMEZONE, "UTC");
 
         if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
@@ -134,6 +139,8 @@ public class Task implements Parcelable {
 
         Uri uri = cr.insert(Events.CONTENT_URI, values);
         _id = ContentUris.parseId(uri);
+        Log.d("INFO::", "INSERTED " + date + " ID " + calendarId );
+
         return _id;
     }
 
@@ -141,8 +148,11 @@ public class Task implements Parcelable {
         Uri deleteUri = null;
         deleteUri = ContentUris.withAppendedId(Events.CONTENT_URI, _id);
         int rows = context.getContentResolver().delete(deleteUri, null, null);
-        Log.i("INFO::", "Rows deleted: " + rows);
         return rows;
+    }
+
+    public long getCalendarID() {
+        return calendarId;
     }
 
     public long getID () {
@@ -164,5 +174,9 @@ public class Task implements Parcelable {
     public static int delete(Context context, long _id) {
         Uri deleteUri = ContentUris.withAppendedId(Events.CONTENT_URI, _id);
         return context.getContentResolver().delete(deleteUri, null, null);
+    }
+
+    public void setCalendarID(long calendarId) {
+        this.calendarId = calendarId;
     }
 }

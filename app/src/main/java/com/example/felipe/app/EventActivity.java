@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
+import models.CalendarProvider;
 import models.Task;
 import models.Work;
 
@@ -44,11 +45,16 @@ public class EventActivity extends AppCompatActivity {
             event_description_show.setText(task.getDescription());
         else
             findViewById(R.id.description_view).setVisibility(View.GONE);
+
         work = Work.findByTask(this, task.getID());
+
+        CalendarProvider calendar = CalendarProvider.find(this, task.getCalendarID());
+        TextView textView = (TextView) findViewById(R.id.event_calendar_show);
+        textView.setText(calendar.getName());
+
         if (work == null)
             findViewById(R.id.estimate_picker_container).setVisibility(View.GONE);
         else {
-            Log.d("INFO::", "WORK: " + work.getTask() + " references " + work.getReference());
             estimate_picker_show.setText(String.format(getResources().getString(R.string.event_payload_show), work.getPayload()));
         }
     }

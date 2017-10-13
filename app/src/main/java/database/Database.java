@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class Database extends SQLiteOpenHelper {
 
     public static final String NAME = "database.db";
-    private static final int VERSAO = 2;
+    private static final int VERSAO = 3;
     private static Database instance;
 
     public Database(Context context) {
@@ -36,6 +36,8 @@ public class Database extends SQLiteOpenHelper {
         String work = "CREATE TABLE "+WorkSchema.TABLE+" ("
                 + WorkSchema.ID + " integer primary key autoincrement,"
                 + WorkSchema.PAYLOAD + " integer,"
+                + WorkSchema.PAYLOADTYPE + " integer NULL,"
+                + WorkSchema.DONE + " integer NULL,"
                 + WorkSchema.REFERENCES + " integer NULL,"
                 + WorkSchema.EVENT+ " integer"
                 +")";

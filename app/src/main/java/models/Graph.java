@@ -78,6 +78,7 @@ public class Graph {
                 total -= disp;
                 Task task = new Task(t.getTitle(), item.getCalendar(v[0]).getTimeInMillis(), item.getCalendar(v[0] + disp).getTimeInMillis());
                 task.setDescription("Atividade programada para planejamento e execução da tarefa \"" + task.getTitle() + "\"\nUse esse tempo com sabedoria :)");
+                task.setCalendarID(t.getCalendarID());
                 org.add(task);
             }
         }

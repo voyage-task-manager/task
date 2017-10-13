@@ -20,6 +20,8 @@ public class WorkSchema {
     public static final String TABLE = "works";
     public static final String ID = "_id";
     public static final String PAYLOAD = "payload";
+    public static final String PAYLOADTYPE = "payload_type"; // Hours, days...
+    public static final String DONE = "done";
     public static final String EVENT = "event_id";
     public static final String REFERENCES = "reference_id";
     private static Database db;

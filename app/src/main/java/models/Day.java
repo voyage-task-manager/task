@@ -145,8 +145,12 @@ public class Day implements Parcelable {
             Calendar c = Calendar.getInstance(TimeZone.getDefault());
             c.setTimeInMillis(t.getDate());
             int hr = c.get(Calendar.HOUR_OF_DAY);
-            if (hr < wake || hr - wake >= all) continue;
-            freeHour[ hr - wake ] = diff;
+            c.setTimeInMillis(t.getEnd());
+            int end = c.get(Calendar.HOUR_OF_DAY);
+
+            if ((hr < wake && end < wake) || hr - wake >= all) continue;
+
+            freeHour[ Math.max(0, hr - wake) ] = diff - (hr < wake ? diff - (wake - hr) : 0);
             free -= diff;
         }
     }
@@ -181,6 +185,10 @@ public class Day implements Parcelable {
         }
         if (start != 0)
             ret.add(new int[]{ start, 24 });
+
+        /*if (compare(calendar, inst)) {
+            Log.d("INFO::", "FULL DEBUG " + t.getTitle() + " >> " + (diff - (hr < wake ? diff - (wake - hr) : 0)));
+        }*/
         return ret;
     }
 
