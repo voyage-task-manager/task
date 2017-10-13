@@ -3,10 +3,7 @@
     <string-array name="period">
         <item>Horas</item>
         <item>Dias</item>
+        <item>Semanas</item>
         <item>Meses</item>
-        <item>Anos</item>
-        <item>Décadas</item>
-        <item>Séculos</item>
-        <item>Milênios</item>
     </string-array>
 </resources>

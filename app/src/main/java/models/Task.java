@@ -160,4 +160,9 @@ public class Task implements Parcelable {
     public void setID(long _id) {
         this._id = _id;
     }
+
+    public static int delete(Context context, long _id) {
+        Uri deleteUri = ContentUris.withAppendedId(Events.CONTENT_URI, _id);
+        return context.getContentResolver().delete(deleteUri, null, null);
+    }
 }

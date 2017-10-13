@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import models.Setting;
+import models.Task;
 import models.Work;
 
 /**
@@ -21,8 +22,8 @@ public class WorkSchema {
     public static final String PAYLOAD = "payload";
     public static final String EVENT = "event_id";
     public static final String REFERENCES = "reference_id";
-    private Database db;
-    private SQLiteDatabase conn;
+    private static Database db;
+    private static SQLiteDatabase conn;
 
     public WorkSchema (Context context) {
         db = Database.getInstance(context);
@@ -32,14 +33,15 @@ public class WorkSchema {
         conn = db.getWritableDatabase();
         ContentValues content = getContent(model);
         long res = conn.insert(TABLE, null, content);
+        conn.close();
         return res != -1;
     }
 
     private ContentValues getContent (Work model) {
         ContentValues content = new ContentValues();
-        content.put(WorkSchema.EVENT, model.getTask().getID());
+        content.put(WorkSchema.EVENT, model.getTask());
         content.put(WorkSchema.PAYLOAD, model.getPayload());
-        content.put(WorkSchema.REFERENCES, model.getReference() == null ? null : model.getReference().getID());
+        content.put(WorkSchema.REFERENCES, model.getReference() == -1 ? null : model.getReference());
         return content;
     }
 
@@ -52,14 +54,15 @@ public class WorkSchema {
                 REFERENCES // 3
         };
 
-        Database db = Database.getInstance(context);
-        SQLiteDatabase conn = db.getReadableDatabase();
+        db = Database.getInstance(context);
+        conn = db.getReadableDatabase();
         cursor = conn.query(TABLE, campos, where, null, null, null, null, null);
 
         List<Work> list = new ArrayList<>();
         while (cursor.moveToNext())
             list.add(parse(cursor, context));
 
+        conn.close();
         db.close();
         return list;
     }
@@ -68,8 +71,16 @@ public class WorkSchema {
         Work work = new Work(context);
         work.setID(cursor.getLong(0));
         work.setPayload(cursor.getInt(1));
-        //work.setTask();
-        //work.setReference();
+        work.setTask(cursor.getLong(2));
+        long ref = cursor.getLong(3);
+        work.setReference(ref == 0 ? -1 : ref);
         return work;
+    }
+
+    public static int delete(Context context, String filter) {
+        conn = db.getWritableDatabase();
+        int n = conn.delete(TABLE, filter, null);
+        conn.close();
+        return n;
     }
 }

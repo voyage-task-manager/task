@@ -19,11 +19,13 @@ public class Graph {
     private Calendar init, end;
     private List<Day> list;
     Setting setting;
+    private Activity activity;
 
     public Graph (Calendar init, Calendar end, Setting setting, Activity activity) {
         this.setting = setting;
         this.init = init;
         this.end = end;
+        this.activity = activity;
         List<Task> l = CalendarProvider.readCalendar(init, end, activity.getContentResolver());
         list = Day.create(init, end, l, true, setting);
 
@@ -42,21 +44,40 @@ public class Graph {
 
         int total = estimate;
         int cont = 0;
+        int lim = -1;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(t.getDate());
         List<Task> org = new ArrayList<>();
+        List<Integer> days = setting.getDays();
+
         for (int i = 0; i < list.size() && total > 0; i++) {
             Day item = list.get(i);
             double diff = Math.ceil( (double) estimate /  (double) (list.size() - cont) );
-            if (item.getFree() < diff ) {
+            if ( item.getFree() < diff || !days.contains(item.getCalendar(3).get(Calendar.DAY_OF_WEEK)%7) ) {
                 cont++;
                 continue;
             }
+
+            if (Day.compare(item.getCalendar(), calendar)) {
+                lim = calendar.get(Calendar.HOUR_OF_DAY);
+            }
+
             List<int[]> pairs = item.getFreeVector();
             for (int x = 0; x < pairs.size() && diff > 0; x++) {
                 int[] v = pairs.get(x);
                 int disp = (int) Math.ceil( Math.min(v[1] - v[0], diff) );
+
+                // Caso chegou no horario da tarega e ainda não completou o cronograma
+                // Retorna lista vazia
+                if (lim >= 0 && lim < v[0] + disp) {
+                    org.clear();
+                    return org;
+                }
+
                 diff -= disp;
                 total -= disp;
-                Task task = new Task(t.getTitle() + " - Tarefa parcial " + (char)(i + 'A'), item.getCalendar(v[0]).getTimeInMillis(), item.getCalendar(v[0] + disp).getTimeInMillis());
+                Task task = new Task(t.getTitle(), item.getCalendar(v[0]).getTimeInMillis(), item.getCalendar(v[0] + disp).getTimeInMillis());
+                task.setDescription("Atividade programada para planejamento e execução da tarefa \"" + task.getTitle() + "\"\nUse esse tempo com sabedoria :)");
                 org.add(task);
             }
         }

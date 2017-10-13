@@ -85,6 +85,43 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_calendar_account_black_24px"
+                    android:tint="@color/text"
+                    android:paddingTop="12dp"
+                    android:paddingLeft="12dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="15dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/event_calendar"
+                        android:background="@android:color/transparent"
+                        android:padding="10dp"
+                        android:textAllCaps="false"
+                        android:textStyle="normal"
+                        android:textAlignment="textStart"
+                        android:layout_gravity="start"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:textColor="@color/text"
+                        android:hint="Nome do calendário"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_calendar_black_24dp"
                     android:tint="@color/text"
                     android:paddingTop="12dp"
@@ -134,7 +171,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_clock_black_24px"
+                    app:srcCompat="@drawable/ic_description_black_24px"
                     android:tint="@color/text"
                     android:paddingTop="12dp"
                     android:paddingLeft="12dp" />
@@ -146,47 +183,112 @@
                     android:orientation="horizontal">
 
                     <EditText
-                        android:id="@+id/estimate_picker"
+                        android:id="@+id/event_description"
                         android:background="@android:color/transparent"
-                        android:paddingTop="14dp"
-                        android:paddingBottom="10dp"
                         android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
+                        android:paddingTop="14dp"
+                        android:paddingBottom="14dp"
                         android:textAllCaps="false"
-                        android:textSize="14dp"
-                        android:inputType="numberSigned"
-                        android:textStyle="normal"
                         android:textAlignment="textStart"
                         android:layout_gravity="start"
                         android:layout_height="wrap_content"
                         android:layout_width="match_parent"
-                        android:layout_weight="1"
                         android:textColor="@color/text"
-                        android:hint="@string/total_time"/>
-
-                    <Spinner
-                        android:layout_marginTop="14dp"
-                        android:paddingBottom="10dp"
-                        android:spinnerMode="dialog"
-                        android:tooltipText="Período"
-                        android:textColor="@color/text"
-                        android:layout_weight="2"
-                        android:id="@+id/period_spinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <!--<Button
-                        android:textAllCaps="false"
-                        android:textStyle="normal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:layout_weight="1"
-                        android:textColor="@color/text"
-                        android:contentDescription="@color/text"
-                        android:hint="18:00"/>-->
+                        android:textSize="14dp"
+                        android:hint="Descrição da tarefa"/>
                 </LinearLayout>
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_clock_black_24px"
+                    android:tint="@color/text"
+                    android:paddingTop="12dp"
+                    android:paddingLeft="12dp" />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:paddingRight="15dp"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="10dp"
+                            android:layout_weight="1"
+                            android:paddingTop="14dp"
+                            android:paddingBottom="14dp"
+                            android:text="Habilitar planejamento para atividade" />
+
+                        <Switch
+                            android:id="@+id/active_plan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/estimate_picker"
+                            android:background="@android:color/transparent"
+                            android:paddingTop="14dp"
+                            android:paddingBottom="14dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:textAllCaps="false"
+                            android:textSize="14dp"
+                            android:inputType="numberSigned"
+                            android:textStyle="normal"
+                            android:textAlignment="textStart"
+                            android:layout_gravity="start"
+                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:textColor="@color/text"
+                            android:hint="@string/total_time" />
+
+                        <Spinner
+                            android:layout_marginTop="14dp"
+                            android:paddingBottom="10dp"
+                            android:spinnerMode="dialog"
+                            android:tooltipText="Período"
+                            android:textColor="@color/text"
+                            android:id="@+id/period_spinner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <!--<Button
+                            android:textAllCaps="false"
+                            android:textStyle="normal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:layout_weight="1"
+                            android:textColor="@color/text"
+                            android:contentDescription="@color/text"
+                            android:hint="18:00"/>-->
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
 
             <View
                 android:layout_width="0dp"

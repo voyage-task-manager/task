@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="0.1in"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/circle_event"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:background="@drawable/round"
+        android:layout_marginRight="10dp"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/calendar_name"
+            android:layout_width="match_parent"
+            android:textSize="0.1in"
+            android:text="Nome do calendário"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/calendar_email"
+            android:text="calendario@email.com"
+            android:textColor="#6666"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

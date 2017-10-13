@@ -28,6 +28,7 @@ public class Day implements Parcelable {
     private int year;
     private float free;
     private Setting setting;
+    private Calendar calendar;
 
     public static String [] months;
 
@@ -44,6 +45,7 @@ public class Day implements Parcelable {
         this(calendar, events, null);
     }
     public Day(Calendar calendar, List<Task> events, Setting setting) {
+        this.calendar = calendar;
         this.number = calendar.get(Calendar.DAY_OF_MONTH);
         this.week = getWeek(calendar);
         this.month = calendar.get(Calendar.MONTH);
@@ -102,52 +104,70 @@ public class Day implements Parcelable {
 
     public void setEvents(List<Task> events) {
 
-        int lunchTime = 2;
         int lunch = 12;
         int dinner = 19;
         int wake = 6;
+        int sleep = 23;
+        all = sleep - wake;
 
         if (setting != null) {
             wake = Integer.parseInt( setting.getWake()[0].split(":")[0] );
             dinner = Integer.parseInt( setting.getDinner()[0].split(":")[0] );
             lunch = Integer.parseInt( setting.getLaunch()[0].split(":")[0] );
-            int sleep = Integer.parseInt( setting.getSleep()[0].split(":")[0] );
-            all = (sleep == 0 ? 24 : sleep) - wake - lunchTime;
+            sleep = Integer.parseInt( setting.getSleep()[0].split(":")[0] );
+            if (sleep == 0) {
+                sleep = 24;
+            }
+            all = sleep - wake;
+        }
+
+        Calendar inst = Calendar.getInstance();
+        if (compare(calendar, inst)) {
+            int h = inst.get(Calendar.HOUR_OF_DAY);
+            wake = Math.max(h, wake);
+            all = sleep - wake;
         }
 
         free = all;
-        freeHour = new int[(int) all+lunchTime];
-        for (int i = 0; i < all+lunchTime; i++)
+        freeHour = new int[(int) all];
+        for (int i = 0; i < all; i++)
             freeHour[i] = 0;
-        freeHour[ lunch - wake ] = 1;
-        freeHour[ dinner - wake ] = 1;
+
+        if (wake < lunch)
+            freeHour[ lunch - wake ] = 1;
+        if (wake < dinner)
+            freeHour[ dinner - wake ] = 1;
 
         this.events = events;
         for (Task t : events) {
-            if (t.isAllDay())
-                continue;
+            if (t.isAllDay()) continue;
             int diff = (int) ceil( (t.getEnd() - t.getDate()) / 3600000 );
-            if (diff < 0)
-                Log.d("INFO::", "NEGATIVE FDP: " + t.getTitle() + " " + t.getEnd() + " " + t.getDate());
             Calendar c = Calendar.getInstance(TimeZone.getDefault());
             c.setTimeInMillis(t.getDate());
-            int h = c.get(Calendar.HOUR_OF_DAY);
-            if (h - wake < 0) continue;
-            freeHour[ h - wake ] = diff;
+            int hr = c.get(Calendar.HOUR_OF_DAY);
+            if (hr < wake || hr - wake >= all) continue;
+            freeHour[ hr - wake ] = diff;
             free -= diff;
         }
+    }
+
+    private int add (int h, int lunch, int dinner) {
+        return (h < lunch ? 2 : (h < dinner ? 1 : 0));
     }
 
     public List<int[]> getFreeVector () {
 
         int lunchTime = 2;
         int wake = setting != null ? Integer.parseInt( setting.getWake()[0].split(":")[0] ) : 6;
+        Calendar inst = Calendar.getInstance();
+        if (compare(inst, calendar))
+            wake = inst.get(Calendar.HOUR_OF_DAY);
 
         int index = 0;
         int start = 0;
         List<int[]> ret = new ArrayList<>();
 
-        while (index < all + lunchTime) {
+        while (index < all) {
             if (freeHour[index] != 0 && start == 0)
                 index += freeHour[index];
             else if (freeHour[index] == 0 && start == 0)
@@ -159,10 +179,8 @@ public class Day implements Parcelable {
             } else
                 index += 1;
         }
-
         if (start != 0)
-            ret.add(new int[]{ start, 0 });
-
+            ret.add(new int[]{ start, 24 });
         return ret;
     }
 
@@ -203,6 +221,10 @@ public class Day implements Parcelable {
         this.free = free;
     }
 
+    public Calendar getCalendar() {
+        return getCalendar(0);
+    }
+
     public Calendar getCalendar(int hour) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);
@@ -220,7 +242,7 @@ public class Day implements Parcelable {
         return create(init, e, tasks);
     }
 
-    private static boolean compare(Calendar date1, Calendar date2) {
+    public static boolean compare(Calendar date1, Calendar date2) {
         return date1.get(Calendar.DAY_OF_MONTH) == date2.get(Calendar.DAY_OF_MONTH)
         && date1.get(Calendar.MONTH) == date2.get(Calendar.MONTH)
         && date1.get(Calendar.YEAR) == date2.get(Calendar.YEAR);
@@ -236,13 +258,20 @@ public class Day implements Parcelable {
 
     public static List<Day> create(Calendar init, Calendar end, List<Task> tasks, Boolean allDays, Setting setting) {
         List<Day> arr = new ArrayList<>();
+
         for(; !compare(init, end); init.add(Calendar.DAY_OF_MONTH, 1)) {
-            ArrayList<Task> events = new ArrayList<>(tasksByDay(tasks, init.get(Calendar.DAY_OF_MONTH)));
-            if (events.size() == 0 && !allDays) continue;
-            Day d = new Day(init, events, setting);
-            arr.add(d);
+            Day d = iter(init, tasks, allDays, setting);
+            if (d != null) arr.add(d);
         }
+        Day d = iter(init, tasks, allDays, setting);
+        if (d != null) arr.add(d);
         return arr;
+    }
+
+    private static Day iter (Calendar init, List<Task> tasks, boolean allDays, Setting setting) {
+        ArrayList<Task> events = new ArrayList<>(tasksByDay(tasks, init.get(Calendar.DAY_OF_MONTH)));
+        if (events.size() == 0 && !allDays) return null;
+        return new Day(init, events, setting);
     }
 
     public String getYear() {

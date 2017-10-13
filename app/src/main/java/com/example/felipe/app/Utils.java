@@ -1,10 +1,12 @@
 package com.example.felipe.app;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
 
 /**
  * Created by felipe on 19/09/17.
