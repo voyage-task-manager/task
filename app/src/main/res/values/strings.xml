@@ -2,7 +2,7 @@
     <string name="app_name">Task</string>
     <string name="log_in_error">Erro ao iniciar sessao</string>
     <string name="logout">Log out</string>
-    <string name="all">Tarefas</string>
+    <string name="all">Agenda de hoje</string>
     <string name="mounth">Este mês</string>
     <string name="logout_error">Não foi possível realizar o log out do aplicativo</string>
     <string name="title_activity_tab">TabActivity</string>
@@ -25,5 +25,6 @@
     <string name="settings_wake">Horário de despertar</string>
     <string name="save">Salvar</string>
     <string name="recalc">Refazendo cálculos</string>
-    <string name="event_payload_show">%d horas totais, X pendentes</string>
+    <string name="event_payload_show">%s totais</string>
+    <string name="title_explore">Orientar</string>
 </resources>

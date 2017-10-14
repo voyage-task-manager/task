@@ -43,6 +43,7 @@ public class WorkSchema {
         ContentValues content = new ContentValues();
         content.put(WorkSchema.EVENT, model.getTask());
         content.put(WorkSchema.PAYLOAD, model.getPayload());
+        content.put(WorkSchema.PAYLOADTYPE, model.getPayloadType());
         content.put(WorkSchema.REFERENCES, model.getReference() == -1 ? null : model.getReference());
         return content;
     }
@@ -53,7 +54,8 @@ public class WorkSchema {
                 ID, // 0
                 PAYLOAD, // 1
                 EVENT, // 2
-                REFERENCES // 3
+                REFERENCES, // 3
+                PAYLOADTYPE // 4
         };
 
         db = Database.getInstance(context);
@@ -73,6 +75,7 @@ public class WorkSchema {
         Work work = new Work(context);
         work.setID(cursor.getLong(0));
         work.setPayload(cursor.getInt(1));
+        work.setPayloadType(cursor.getInt(4));
         work.setTask(cursor.getLong(2));
         long ref = cursor.getLong(3);
         work.setReference(ref == 0 ? -1 : ref);

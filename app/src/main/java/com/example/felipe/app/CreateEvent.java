@@ -142,6 +142,9 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         period_spinner.setSelection(0);
     }
 
+    private void setSelected () {
+    }
+
     private View.OnClickListener showModal() {
         return new View.OnClickListener() {
             @Override
@@ -206,6 +209,7 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         }
 
         int estimative = Integer.parseInt(estimate_picker.getText().toString());
+        estimative = Work.translatePayload(estimative, (int) period_spinner.getSelectedItemId(), setting);
         List<Task> l = graph.organize(task, estimative);
 
         if (l.size() == 0) {
@@ -229,6 +233,7 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
 
         Work work = new Work(this);
         work.setPayload(estimative);
+        work.setPayloadType( (int) period_spinner.getSelectedItemId() );
         work.setTask(task.getID());
         work.setReference(-1);
         if (!work.save()) {

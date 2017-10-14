@@ -42,6 +42,7 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
     private final int PERMISSIONS_REQUEST_WRITE_CALENDAR = 788;
     public static TabActivity prototype;
     ArrayList<ArrayList<Day>> start;
+    private Day today;
     Fragment atual;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -71,7 +72,6 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         prototype = this;
         setContentView(R.layout.activity_tab);
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CALENDAR}, PERMISSIONS_REQUEST_WRITE_CALENDAR);
@@ -80,11 +80,18 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
 
         start = new ArrayList<>();
         reload();
-        home();
+        calendar();
+        navigation.setSelectedItemId(R.id.navigation_calendar);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     public void home () {
-        List<Task> t = CalendarProvider.readCalendar(getContentResolver());
+        List<Task> t;
+        if (today == null)
+            t = new ArrayList<>();
+        else
+            t = today.getEvents();
+
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("tasks", new ArrayList<Parcelable>(t));
         MainFragment frag = new MainFragment();
@@ -169,8 +176,18 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         int month = c.get(Calendar.MONTH), year = c.get(Calendar.YEAR);
         start.clear();
         start.add( load(month - 1 < 0 ? 11 : month-1, month - 1< 0 ? year-1 : year) );
-        start.add( load(month, year) );
+        ArrayList<Day> arr = load(month, year);
+        start.add(arr);
         start.add( load( (month+1)%12, month < 11 ? year : year + 1) );
+
+        int number = c.get(Calendar.DAY_OF_MONTH);
+        today = null;
+        for (Day d : arr) {
+            if (d.getNumber() == number) {
+                today = d;
+                break;
+            }
+        }
 
         if (atual != null && atual instanceof CalendarFragment)
             ((CalendarFragment) atual).atualize();

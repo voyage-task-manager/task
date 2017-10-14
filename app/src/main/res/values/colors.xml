@@ -10,4 +10,10 @@
     <color name="disabled">#999</color>
     <color name="inactive">#ccc</color>
     <color name="accent">@android:color/white</color>
+
+    <!-- Rotine colors -->
+    <color name="warning1">#F7CA18</color>
+    <color name="warning2">#F5D76E</color>
+
+
 </resources>

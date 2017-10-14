@@ -55,7 +55,8 @@ public class EventActivity extends AppCompatActivity {
         if (work == null)
             findViewById(R.id.estimate_picker_container).setVisibility(View.GONE);
         else {
-            estimate_picker_show.setText(String.format(getResources().getString(R.string.event_payload_show), work.getPayload()));
+            String[] arr = getResources().getStringArray(R.array.period);
+            estimate_picker_show.setText(work.getPayload() + String.format(getResources().getString(R.string.event_payload_show), " " + arr[ work.getPayloadType() ]));
         }
     }
 

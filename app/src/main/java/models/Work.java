@@ -18,6 +18,7 @@ public class Work {
     private long task;
     private long reference;
     private int payload;
+    private int payloadType;
     private SQLiteDatabase db;
 
 
@@ -58,6 +59,14 @@ public class Work {
         this.reference = reference;
     }
 
+    public int getPayloadType() {
+        return payloadType;
+    }
+
+    public void setPayloadType(int payloadType) {
+        this.payloadType = payloadType;
+    }
+
     public static Work findByTask(Context context, long id) {
         String where = WorkSchema.EVENT + " = " + id;
         List<Work> arr = WorkSchema.find(context, where);
@@ -68,6 +77,27 @@ public class Work {
     public void delete() {
         String filter = WorkSchema.ID + " = " + this.getID();
         WorkSchema.delete(context, filter);
+    }
+
+    public static int translatePayload(int number, int payloadType, Setting setting) {
+        int resp = number;
+        if (payloadType == 0) // Horas
+            return resp;
+        int sleep = Integer.parseInt(setting.getSleep()[0].split(":")[0]);
+        int wake = Integer.parseInt(setting.getWake()[0].split(":")[0]);
+        if (sleep < wake)
+            sleep += 24;
+        int hourInDay = sleep - wake;
+        resp *= hourInDay;
+        if (payloadType == 1) // Dias
+            return resp;
+        int week = setting.getDays().size();
+        resp *= week;
+        if (payloadType == 2) // Semanas
+            return resp;
+
+        resp *= 4; // Meses
+        return resp;
     }
 
     public static void deleteByEvent(Context context, long task) {
