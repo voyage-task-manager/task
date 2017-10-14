@@ -186,9 +186,7 @@ public class Day implements Parcelable {
         if (start != 0)
             ret.add(new int[]{ start, 24 });
 
-        /*if (compare(calendar, inst)) {
-            Log.d("INFO::", "FULL DEBUG " + t.getTitle() + " >> " + (diff - (hr < wake ? diff - (wake - hr) : 0)));
-        }*/
+        Log.d("INFO::", "FULL DEBUG " + wake + " >> " + toString() + " << " + String.format(Locale.getDefault(), "%tD", calendar.getTime()));
         return ret;
     }
 
@@ -243,32 +241,34 @@ public class Day implements Parcelable {
         return c;
     }
 
-    public static List<Day> create(Calendar init, int end, List<Task> tasks) {
+    public static List<Day> create (Calendar init, int end, List<Task> tasks) {
         Calendar e = Calendar.getInstance();
         e.setTimeInMillis(init.getTimeInMillis());
         e.set(Calendar.DAY_OF_MONTH, end);
         return create(init, e, tasks);
     }
 
-    public static boolean compare(Calendar date1, Calendar date2) {
+    public static boolean compare (Calendar date1, Calendar date2) {
         return date1.get(Calendar.DAY_OF_MONTH) == date2.get(Calendar.DAY_OF_MONTH)
         && date1.get(Calendar.MONTH) == date2.get(Calendar.MONTH)
         && date1.get(Calendar.YEAR) == date2.get(Calendar.YEAR);
     }
 
-    public static List<Day> create(Calendar init, Calendar end, List<Task> tasks) {
+    public static List<Day> create (Calendar init, Calendar end, List<Task> tasks) {
         return create(init, end, tasks, false);
     }
 
-    public static List<Day> create(Calendar init, Calendar end, List<Task> tasks, Boolean allDays) {
+    public static List<Day> create (Calendar init, Calendar end, List<Task> tasks, Boolean allDays) {
         return create(init, end, tasks, allDays, null);
     }
 
-    public static List<Day> create(Calendar init, Calendar end, List<Task> tasks, Boolean allDays, Setting setting) {
+    public static List<Day> create (Calendar init, Calendar end, List<Task> tasks, Boolean allDays, Setting setting) {
         List<Day> arr = new ArrayList<>();
 
         for(; !compare(init, end); init.add(Calendar.DAY_OF_MONTH, 1)) {
-            Day d = iter(init, tasks, allDays, setting);
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(init.getTimeInMillis());
+            Day d = iter(c, tasks, allDays, setting);
             if (d != null) arr.add(d);
         }
         Day d = iter(init, tasks, allDays, setting);
