@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -29,11 +30,13 @@ public class ViewPageAdapter extends PagerAdapter {
 
     private Activity activity;
     private ArrayList<ArrayList<Day>> items;
+    private List<String> headers;
     private LayoutInflater inflater;
 
-    public ViewPageAdapter (Activity activity, ArrayList<ArrayList<Day>> items) {
+    public ViewPageAdapter (Activity activity, ArrayList<ArrayList<Day>> items, List<String> headers) {
         this.activity = activity;
         this.items = items;
+        this.headers = headers;
     }
 
     @Override
@@ -62,10 +65,17 @@ public class ViewPageAdapter extends PagerAdapter {
         list.setAdapter(adapter);
         ArrayList<Day> days = items.get(position);
         TextView text = (TextView) view.findViewById(R.id.month);
-        Day d = days.get(0);
-        if (items.get(position).size() > 0) {
-            text.setText(d.getMonth(true).toUpperCase() + ", " + d.getYear());
+        text.setText(headers.get(position));
+
+        FrameLayout empty = (FrameLayout) view.findViewById(R.id.empty);
+        if (days.size() > 0) {
+            empty.setVisibility(View.GONE);
+            list.setVisibility(View.VISIBLE);
+        } else {
+            list.setVisibility(View.GONE);
+            empty.setVisibility(View.VISIBLE);
         }
+
         container.addView(view);
         return view;
     }

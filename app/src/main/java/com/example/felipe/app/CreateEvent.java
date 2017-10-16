@@ -208,9 +208,12 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
             return;
         }
 
-        int estimative = Integer.parseInt(estimate_picker.getText().toString());
-        estimative = Work.translatePayload(estimative, (int) period_spinner.getSelectedItemId(), setting);
-        List<Task> l = graph.organize(task, estimative);
+        String estimateText = "0";
+        if (estimate_picker.getText() != null);
+            estimateText = estimate_picker.getText().toString();
+        int estimative = Integer.parseInt(estimateText);
+        int estimate = Work.translatePayload(estimative, (int) period_spinner.getSelectedItemId(), setting);
+        List<Task> l = graph.organize(task, estimate);
 
         if (l.size() == 0) {
             final Activity act = this;

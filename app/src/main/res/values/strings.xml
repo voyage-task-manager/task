@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Task</string>
+    <string name="app_name">Voyage</string>
     <string name="log_in_error">Erro ao iniciar sessao</string>
     <string name="logout">Log out</string>
     <string name="all">Agenda de hoje</string>
@@ -27,4 +27,5 @@
     <string name="recalc">Refazendo cálculos</string>
     <string name="event_payload_show">%s totais</string>
     <string name="title_explore">Orientar</string>
+    <string name="empty_task">Você não possui atividades para este mês</string>
 </resources>

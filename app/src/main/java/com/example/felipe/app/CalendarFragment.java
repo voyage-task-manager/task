@@ -33,6 +33,7 @@ public class CalendarFragment extends Fragment {
     private int year;
     private int today;
     private int page = 1;
+    private List<String> headers = new ArrayList<>();
     private ArrayList<ArrayList<Day>> arr;
     private ViewPageAdapter pageAdapter;
 
@@ -54,11 +55,26 @@ public class CalendarFragment extends Fragment {
             return;
         }
         arr.clear();
+        headers.clear();
         ArrayList<ArrayList<Day>> init = ((Listener) activity).init();
-        for(ArrayList<Day> i : init)
+        Calendar c = Calendar.getInstance();
+        month = c.get(Calendar.MONTH);
+        int m = month - 1, y = c.get(Calendar.YEAR);
+        for(ArrayList<Day> i : init) {
             arr.add(i);
-        month = init.get(1).get(0).getMonth();
+            headers.add(makeHeader(m, y));
+            Log.d("INFO::", "CA: " + makeHeader(m, y));
+            m++;
+            if (m > 11) {
+                m = 0;
+                y++;
+            }
+        }
         pageAdapter.notifyDataSetChanged();
+    }
+
+    private String makeHeader (int month, int year) {
+        return Day.months[ month ].toUpperCase() + ", " + year;
     }
 
     private void scrollToDay() {
@@ -82,7 +98,7 @@ public class CalendarFragment extends Fragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             arr = new ArrayList<>();
-            pageAdapter = new ViewPageAdapter(activity, arr);
+            pageAdapter = new ViewPageAdapter(activity, arr, headers);
             init();
             today = bundle.getInt("today");
             month = bundle.getInt("month");
@@ -125,16 +141,22 @@ public class CalendarFragment extends Fragment {
                     month = month % 12;
                     if (month == 0) year++;
                     arr.add( ((Listener) activity).load( a, y ));
+                    headers.add(makeHeader(a, y));
                     arr.remove(0);
+                    headers.remove(0);
                 }
                 else if (position == 0) {
                     if (month < 0) month = 11;
                     if (month == 11) year--;
-                    int a = arr.get(0).get(0).getMonth() - 1 < 0 ? 11 : arr.get(0).get(0).getMonth() - 1;
+                    int a = (month-1) < 0 ? 11 : (month-1);
                     int y = a == 11 ? year-1 : year;
                     arr.add( 0, ((Listener) activity).load( a, y ));
+                    headers.add(0, makeHeader(a, y));
                 }
-                if (var < 0) arr.remove(arr.size() - 1);
+                if (var < 0) {
+                    arr.remove(arr.size() - 1);
+                    headers.remove(headers.size() - 1);
+                }
                 pageAdapter.notifyDataSetChanged();
                 page = 1;
                 block = true;

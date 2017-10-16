@@ -40,7 +40,7 @@ public class EventActivity extends AppCompatActivity {
         estimate_picker_show = (TextView) findViewById(R.id.estimate_picker_show);
         event_description_show = (TextView) findViewById(R.id.event_description_show);
         event_name_show.setText(task.getTitle());
-        event_date_show.setText( String.format(Locale.getDefault(), "%tA, %td de %tB de %tY", task.getDate(), task.getDate(), task.getDate(), task.getDate() ) );
+        event_date_show.setText( String.format(Locale.getDefault(), "%tA, %td de %tB de %tY às %tR", task.getDate(), task.getDate(), task.getDate(), task.getDate(), task.getDate() ) );
         if (task.getDescription() != null && !task.getDescription().equals(""))
             event_description_show.setText(task.getDescription());
         else
