@@ -1,8 +1,6 @@
 package adapters;
 
 import android.app.Activity;
-import android.media.Image;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -12,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.felipe.app.R;
+import voyage.task.zerodois.app.R;
 
 import java.util.Calendar;
 import java.util.List;

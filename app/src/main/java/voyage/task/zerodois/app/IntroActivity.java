@@ -1,6 +1,5 @@
-package com.example.felipe.app;
+package voyage.task.zerodois.app;
 
-import android.*;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -16,7 +15,7 @@ public class IntroActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_intro);
+        setContentView(voyage.task.zerodois.app.R.layout.activity_intro);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
             request(null);

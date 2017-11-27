@@ -1,8 +1,7 @@
-package com.example.felipe.app;
+package voyage.task.zerodois.app;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -10,17 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import adapters.CalendarAdapter;
 import adapters.ViewPageAdapter;
 import models.Day;
-import models.Task;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -57,6 +53,12 @@ public class CalendarFragment extends Fragment {
         arr.clear();
         headers.clear();
         ArrayList<ArrayList<Day>> init = ((Listener) activity).init();
+
+        if (init == null) {
+            pageAdapter.notifyDataSetChanged();
+            return;
+        }
+
         Calendar c = Calendar.getInstance();
         month = c.get(Calendar.MONTH);
         int m = month - 1, y = c.get(Calendar.YEAR);

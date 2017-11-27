@@ -108,21 +108,33 @@ public class CalendarProvider implements Parcelable {
     }
 
     public static List<Task> readCalendar(Calendar init, Calendar end, ContentResolver resolver) {
+        return readCalendar(init, end, resolver, -1);
+    }
+
+    public static List<Task> readCalendar(Calendar init, Calendar end, ContentResolver resolver, long _id) {
         Uri.Builder eventsUriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon();
-        long dtStart = init.getTimeInMillis();
-        if (end == null) {
-            end = init;
-            end.set( Calendar.DAY_OF_MONTH, end.getActualMaximum(Calendar.DAY_OF_MONTH) );
+
+        String filter = "";
+        String[] values;
+
+        if (_id != -1) {
+            filter = null;
+            values = null;
+            eventsUriBuilder = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, _id).buildUpon();
+        } else {
+            long dtStart = init.getTimeInMillis();
+            if (end == null) {
+                end = init;
+                end.set( Calendar.DAY_OF_MONTH, end.getActualMaximum(Calendar.DAY_OF_MONTH) );
+            }
+            long dtEnd = end.getTimeInMillis();
+            ContentUris.appendId(eventsUriBuilder, dtStart);
+            ContentUris.appendId(eventsUriBuilder, dtEnd);
+            filter = "( " + CalendarContract.Instances.BEGIN + " >= ? )";
+            values = new String[]{ Long.toString(dtStart) };
         }
-        long dtEnd = end.getTimeInMillis();
 
-        ContentUris.appendId(eventsUriBuilder, dtStart);
-        ContentUris.appendId(eventsUriBuilder, dtEnd);
         Uri eventsUri = eventsUriBuilder.build();
-
-        String filter = "( " + CalendarContract.Instances.BEGIN + " >= ? )";
-        String[] values = new String[]{ Long.toString(dtStart) };
-
         Cursor cursor = null;
         String[] fields = new String[] {
                 CalendarContract.Events.TITLE, // 0

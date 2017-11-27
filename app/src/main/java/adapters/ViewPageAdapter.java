@@ -3,22 +3,18 @@ package adapters;
 import android.app.Activity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.felipe.app.R;
+import voyage.task.zerodois.app.R;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import models.Day;
 

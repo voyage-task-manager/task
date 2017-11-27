@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="0.15in"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rate_text"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!--<Button
+            android:id="@+id/no_rate"
+            android:textStyle="normal"
+            android:background="@android:color/transparent"
+            android:text="Não, obrigado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="0dp" />-->
+        <Button
+            android:id="@+id/rate_later"
+            android:textStyle="normal"
+            android:background="@android:color/transparent"
+            android:text="Mais tarde"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="0dp" />
+        <Button
+            android:textColor="@color/colorPrimary"
+            android:id="@+id/rate_now"
+            android:textStyle="normal"
+            android:background="@android:color/transparent"
+            android:text="Avaliar!"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="0dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

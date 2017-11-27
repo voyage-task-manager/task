@@ -148,6 +148,9 @@ public class Day implements Parcelable {
             c.setTimeInMillis(t.getEnd());
             int end = c.get(Calendar.HOUR_OF_DAY);
 
+            if (compare(calendar, inst))
+                Log.d("INFO::", "FFFF " + hr + " >> " + end);
+
             if ((hr < wake && end < wake) || hr - wake >= all) continue;
 
             freeHour[ Math.max(0, hr - wake) ] = diff - (hr < wake ? diff - (wake - hr) : 0);

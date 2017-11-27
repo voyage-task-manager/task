@@ -28,4 +28,5 @@
     <string name="event_payload_show">%s totais</string>
     <string name="title_explore">Orientar</string>
     <string name="empty_task">Você não possui atividades para este mês</string>
+    <string name="rate_text">Se você gostou ou está gostando de nosso aplicativo, avalie-nos no Google Play e de sua opinião sobre ajustes e melhorias futuras ;)</string>
 </resources>

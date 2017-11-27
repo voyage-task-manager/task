@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.widget.TextView;
 
-import com.example.felipe.app.R;
+import voyage.task.zerodois.app.R;
 
 /**
  * Created by felipe on 09/10/17.

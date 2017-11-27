@@ -1,9 +1,8 @@
-package com.example.felipe.app;
+package voyage.task.zerodois.app;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -57,7 +55,6 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
     private CalendarProvider calendarProvider;
     Runnable onClose;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public String format(Calendar calendar) {
         Date t = calendar.getTime();
         String f = String.format(Locale.getDefault(), "%ta, %td de %tB de %tY", t, t, t, t);
@@ -68,7 +65,6 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         return f;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public String formatHour(Calendar calendar) {
         //return calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE);
         return String.format(Locale.getDefault(), "%tH:%tM", calendar.getTime(), calendar.getTime());
@@ -76,12 +72,10 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
 
     public DatePickerDialog.OnDateSetListener getListener(final View v) {
         return new DatePickerDialog.OnDateSetListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
             private void updateLabel(Button b) {
                 b.setText(format(calendar));
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 calendar.set(Calendar.YEAR, year);
@@ -103,7 +97,6 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         };
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -186,7 +179,6 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
     }
 
     /*  */
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void createEvent(View view) throws InterruptedException {
         w = new Waiting(this, active_plan.isChecked() ? "Configurando seu tempo" : "Salvando evento na agenda");
         if (calendars.size() == 0)
@@ -269,7 +261,6 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         finish();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onClick(View view) {
         DatePickerDialog picker = new DatePickerDialog(this, getListener(view), calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));

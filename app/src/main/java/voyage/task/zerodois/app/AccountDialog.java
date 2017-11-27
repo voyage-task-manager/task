@@ -1,10 +1,9 @@
-package com.example.felipe.app;
+package voyage.task.zerodois.app;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import android.widget.ListView;
 import java.util.List;
 
 import adapters.CalendarAccountAdapter;
-import adapters.PersonalAdapter;
 import models.CalendarProvider;
 
 public class AccountDialog extends DialogFragment {

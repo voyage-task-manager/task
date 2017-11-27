@@ -3,21 +3,16 @@ package adapters;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.TextView;
 
-import com.example.felipe.app.CreateEvent;
-import com.example.felipe.app.EventActivity;
-import com.example.felipe.app.R;
+import voyage.task.zerodois.app.EventActivity;
+import voyage.task.zerodois.app.R;
 
 import java.util.Calendar;
 import java.util.List;
 
-import models.Day;
 import models.Task;
 
 /**
@@ -73,11 +68,15 @@ public class EventsAdapter extends BaseAdapter {
         calendar.setTimeInMillis(item.getDate());
         int HOUR = Calendar.HOUR_OF_DAY;
         int MIN = Calendar.MINUTE;
+
         String hour = String.format("%02d:%02d", calendar.get(HOUR), calendar.get(MIN));
         calendar.setTimeInMillis(item.getEnd());
         hour += " - " + String.format("%02d:%02d", calendar.get(HOUR), calendar.get(MIN));
-        holder.clock.setText(hour);
 
+        if (item.isAllDay())
+            hour = "Dia todo";
+
+        holder.clock.setText(hour);
         return view;
     }
 

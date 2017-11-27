@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.felipe.app.CreateEvent">
+    tools:context="com.example.felipe.app.voyage.example.felipe.app.CreateEvent">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -30,16 +30,22 @@
                 android:padding="10dp">
 
                 <ImageButton
-                    android:layout_width="25dp"
+                    android:layout_width="45dp"
                     android:layout_height="25dp"
                     android:scaleType="centerCrop"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
                     android:contentDescription="Voltar"
                     app:srcCompat="@drawable/ic_back_black_24px"
                     android:tint="#fff"
                     android:onClick="close"
                     android:background="@android:color/transparent"/>
-                <Button
+                <View
+                    android:layout_weight="1"
                     android:layout_width="match_parent"
+                    android:layout_height="25dp" ></View>
+                <Button
+                    android:layout_width="wrap_content"
                     android:background="@android:color/transparent"
                     android:layout_height="wrap_content"
                     android:textAlignment="textEnd"

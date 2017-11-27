@@ -1,19 +1,14 @@
 package adapters;
 
 import android.app.Activity;
-import android.graphics.drawable.GradientDrawable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.example.felipe.app.R;
+import voyage.task.zerodois.app.R;
 
 import java.util.List;
 

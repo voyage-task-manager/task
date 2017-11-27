@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:950125899855:android:c23aca7b6a4d6d8b",
         "android_client_info": {
-          "package_name": "com.example.felipe.app"
+          "package_name": "voyage.task.zerodois.app"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "950125899855-7h7vhm2daaith1pqfjnkevjv1ht9tvr6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.felipe.app",
+            "package_name": "voyage.task.zerodois",
             "certificate_hash": "f69bdbccee2ac3f5bfbc18bde918afc522dadacb"
           }
         },

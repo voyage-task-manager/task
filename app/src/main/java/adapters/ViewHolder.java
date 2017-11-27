@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.felipe.app.R;
+import voyage.task.zerodois.app.R;
 
 /**
  * Created by felipe on 13/09/17.

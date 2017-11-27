@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.felipe.app.MainFragment">
+    tools:context="com.example.felipe.app.voyage.example.felipe.app.MainFragment">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -56,6 +56,15 @@
                 android:textColor="@color/disabled"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/to_late"
+                android:background="@android:color/transparent"
+                android:textColor="@android:color/holo_red_light"
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adiar tarefa"/>
 
         </LinearLayout>
         <!--<ListView

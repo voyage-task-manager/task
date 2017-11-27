@@ -3,10 +3,9 @@ package adapters;
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.felipe.app.R;
+import voyage.task.zerodois.app.R;
 
 public class CalendarAccountHolder {
 

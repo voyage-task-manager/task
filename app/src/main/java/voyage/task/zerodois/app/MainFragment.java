@@ -1,29 +1,29 @@
-package com.example.felipe.app;
+package voyage.task.zerodois.app;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
-import adapters.PersonalAdapter;
-import adapters.RotineAdapter;
+import models.CalendarProvider;
+import models.Graph;
+import models.Setting;
 import models.Task;
+import models.Work;
 
 public class MainFragment extends Fragment {
 
@@ -32,6 +32,9 @@ public class MainFragment extends Fragment {
     private Activity activity;
     private ImageView rotine_icon;
     private TextView rotine_name, rotine_hour;
+    private Button to_late;
+    private Task now;
+    private Setting mySetting;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,7 +48,9 @@ public class MainFragment extends Fragment {
         rotine_icon = (ImageView) activity.findViewById(R.id.rotine_icon);
         rotine_hour = (TextView) activity.findViewById(R.id.rotine_hour);
         rotine_name = (TextView) activity.findViewById(R.id.rotine_name);
-        Task now = null;
+        to_late = (Button) activity.findViewById(R.id.to_late);
+        now = null;
+        mySetting = Setting.init(activity).get(1);
         Task next = null;
         long min = 3600000 * 24;
 
@@ -56,7 +61,7 @@ public class MainFragment extends Fragment {
             Calendar instance = Calendar.getInstance();
             long time = instance.getTimeInMillis();
             for (Task t : tasks) {
-                if (time >= t.getDate() && time <= t.getEnd()) now = t;
+                if (time >= t.getDate() && time <= t.getEnd() && !t.isAllDay()) now = t;
                 else if (time > t.getDate()) continue;
 
                 if (t.getDate() - time < min) {
@@ -66,6 +71,7 @@ public class MainFragment extends Fragment {
             }
 
             if (now == null) {
+                to_late.setVisibility(View.GONE);
                 rotine_name.setText("Este horário é livre para fazer o que quiser");
                 if (next != null)
                     rotine_hour.setText( String.format(Locale.getDefault(), "Próxima tarefa às %tR", next.getDate()) );
@@ -77,11 +83,14 @@ public class MainFragment extends Fragment {
                         periodo = "a tarde";
                     rotine_hour.setText( "Você tem " + periodo + " livre, aproveite!");
                 }
-                rotine_icon.setImageDrawable( ContextCompat.getDrawable(getActivity(), R.drawable.ic_very_happy_black_24px) );
+                rotine_icon.setImageResource(R.drawable.ic_very_happy_black_24px);
+                //rotine_icon.setImageDrawable( ContextCompat.getDrawable(getActivity(), R.drawable.ic_very_happy_black_24px) );
             } else {
+                to_late.setVisibility(View.VISIBLE);
                 rotine_name.setText("Agora é hora de trabalhar na tarefa " + now.getTitle());
                 rotine_hour.setText( String.format(Locale.getDefault(), "Das %tR até %tR", now.getDate(), now.getEnd()) );
-                rotine_icon.setImageDrawable( ContextCompat.getDrawable(getActivity(), R.drawable.ic_work_black_24px) );
+                rotine_icon.setImageResource(R.drawable.ic_work_black_24px);
+                //rotine_icon.setImageDrawable( ContextCompat.getDrawable(getActivity(), R.drawable.ic_work_black_24px) );
             }
 
             /*PersonalAdapter adapter = new PersonalAdapter(getActivity(), tasks);
@@ -91,6 +100,61 @@ public class MainFragment extends Fragment {
                 else
                     Log.d("INFO::", "NOOOOO!");*/
         }
+
+        to_late.setOnClickListener(onClick());
+    }
+
+    private View.OnClickListener onClick () {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Button b = ((Button) view);
+                Work work = Work.findByTask(activity, now.getID());
+                if (work == null || work.getReference() == -1)
+                    return;
+                List<Task> list = CalendarProvider.readCalendar(activity.getContentResolver()); //CalendarProvider.readCalendar(null, null, activity.getContentResolver(), work.getReference());
+                Task origin = null;
+                for (Task l : list)
+                    if (l.getID() == work.getReference()) {
+                        origin = l;
+                        break;
+                    }
+                if (origin == null)
+                    return;
+                Calendar o = Calendar.getInstance();
+                Calendar i = Calendar.getInstance();
+                i.set(Calendar.HOUR_OF_DAY, 1);
+                o.setTimeInMillis(origin.getDate());
+
+                Graph graph = new Graph(i, o, mySetting, activity);
+                int t = (int) Math.ceil( (now.getEnd() - now.getDate())/3600000 );
+                List<Task> prev = graph.organize(origin, t);
+
+                if (prev.size() == 0) {
+                    Toast.makeText(activity, "Não há tempo na sua agenda para executar esta tarefa :(", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                for (Task n: prev) {
+                    n.record(activity);
+                    Work w = new Work(activity);
+                    w.setPayloadType(work.getPayloadType());
+                    w.setPayload(w.getPayload());
+                    w.setReference(work.getReference());
+                    w.setTask(n.getID());
+                    w.save();
+                }
+
+                Task.delete(activity, now.getID());
+                work.delete();
+                TabActivity.prototype.reload();
+
+                b.setEnabled(false);
+                b.setClickable(false);
+                b.setText("Tarefa adiada, procrastine a vontade :)");
+                b.setTextColor(ContextCompat.getColor(activity, R.color.disabled));
+            }
+        };
     }
 
     @Override

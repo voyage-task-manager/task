@@ -1,34 +1,24 @@
-package com.example.felipe.app;
+package voyage.task.zerodois.app;
 
-import android.app.Activity;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.os.ParcelableCompat;
-import android.support.v4.os.ResultReceiver;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+
 import android.Manifest;
 import java.util.List;
-import java.util.TimeZone;
 
 import models.CalendarProvider;
 import models.Day;
@@ -71,6 +61,15 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         super.onCreate(savedInstanceState);
         prototype = this;
         setContentView(R.layout.activity_tab);
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(this, IntroActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
@@ -83,6 +82,8 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         calendar();
         navigation.setSelectedItemId(R.id.navigation_calendar);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        AppRater.app_launched(this);
     }
 
     public void home () {
