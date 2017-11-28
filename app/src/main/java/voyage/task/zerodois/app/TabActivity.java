@@ -23,6 +23,7 @@ import java.util.List;
 import models.CalendarProvider;
 import models.Day;
 import models.Task;
+import zerodois.neuralnetwork.Network;
 
 public class TabActivity extends AppCompatActivity implements CalendarFragment.Listener {
 
@@ -62,14 +63,15 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         prototype = this;
         setContentView(R.layout.activity_tab);
 
+        Network net = new Network();
+        net.train(new double[][]{ {0, 0}, {0, 1}, {1, 0}, {1, 1} }, new double[][]{ {1}, {0}, {0}, {1} });
+
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             Intent intent = new Intent(this, IntroActivity.class);
             startActivity(intent);
             finish();
             return;
         }
-
-
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
