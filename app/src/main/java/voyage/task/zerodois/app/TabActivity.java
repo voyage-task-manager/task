@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -63,8 +64,13 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         prototype = this;
         setContentView(R.layout.activity_tab);
 
-        Network net = new Network();
-        net.train(new double[][]{ {0, 0}, {0, 1}, {1, 0}, {1, 1} }, new double[][]{ {1}, {0}, {0}, {1} });
+        /* Neural Network test
+        Network net = new Network(true);
+        net.learn(new double[][]{ {0, 0}, {0, 1}, {1, 0}, {1, 1} }, new double[][]{ {1}, {0}, {0}, {1} });
+        double[] r = net.predict(new double[]{0, 0});
+        for (int i =0; i<r.length; i++)
+            Log.d("PREDICT::", i + " >> " + r[i]);
+        */
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             Intent intent = new Intent(this, IntroActivity.class);
