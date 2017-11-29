@@ -11,9 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,16 +22,16 @@ import java.util.List;
 import models.CalendarProvider;
 import models.Day;
 import models.Task;
-import zerodois.neuralnetwork.Network;
+import zerodois.neuralnetwork.NeuralNetwork;
 
 public class TabActivity extends AppCompatActivity implements CalendarFragment.Listener {
 
-    private TextView mTextMessage;
     private BottomNavigationView navigation;
     private FragmentManager fm;
     private final int PERMISSIONS_REQUEST_WRITE_CALENDAR = 788;
+    private ArrayList<ArrayList<Day>> start;
     public static TabActivity prototype;
-    ArrayList<ArrayList<Day>> start;
+    private NeuralNetwork network;
     private Day today;
     Fragment atual;
 
@@ -65,7 +63,7 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         setContentView(R.layout.activity_tab);
 
         /* Neural Network test
-        Network net = new Network(true);
+        NeuralNetwork net = new NeuralNetwork(true);
         net.learn(new double[][]{ {0, 0}, {0, 1}, {1, 0}, {1, 1} }, new double[][]{ {1}, {0}, {0}, {1} });
         double[] r = net.predict(new double[]{0, 0});
         for (int i =0; i<r.length; i++)
@@ -100,7 +98,6 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
             t = new ArrayList<>();
         else
             t = today.getEvents();
-
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("tasks", new ArrayList<Parcelable>(t));
         MainFragment frag = new MainFragment();
@@ -135,7 +132,6 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
             ((CalendarFragment) atual).init();
             return;
         }
-
         Bundle bundle = new Bundle();
         Calendar c = Calendar.getInstance();
         bundle.putInt("today", c.get(Calendar.DAY_OF_MONTH));
