@@ -24,6 +24,7 @@ public class NetworkSchema {
     public static final String LAYER = "layer";
     public static final String COLUMN = "column";
     public static final String ROW = "row";
+    public static final String DIMENSION = "dimension";
     private static Database db;
     private static SQLiteDatabase conn;
 
@@ -39,13 +40,35 @@ public class NetworkSchema {
         return res != -1;
     }
 
-    private ContentValues getContent (Network model) {
+    public boolean record (double[][][] models) {
+        conn = db.getWritableDatabase();
+        conn.beginTransaction();
+        for (int i=0; i<models.length; i++) {
+            for (int j=0; j<models[i].length; j++) {
+                for (int k=0; k<models[i][j].length; k++) {
+                    ContentValues content = getContent(i, j, k, models[i][j][k], models[i].length + "x" + models[i][j].length);
+                    long res = conn.insert(TABLE, null, content);
+                }
+            }
+        }
+        conn.setTransactionSuccessful();
+        conn.endTransaction();
+        conn.close();
+        return true;
+    }
+
+    private ContentValues getContent (int layer, int row, int column, double val, String dimension) {
         ContentValues content = new ContentValues();
-        content.put(VALUE, model.getValue());
-        content.put(LAYER, model.getLayer());
-        content.put(COLUMN, model.getColumn());
-        content.put(ROW, model.getRow());
+        content.put(VALUE, val);
+        content.put(LAYER, layer);
+        content.put(COLUMN, column);
+        content.put(ROW, row);
+        content.put(DIMENSION, dimension);
         return content;
+    }
+
+    private ContentValues getContent (Network model) {
+        return getContent(model.getLayer(), model.getRow(), model.getColumn(), model.getValue(), model.getDimension());
     }
 
     public static List<Network> find(Context context, String where) {
@@ -55,11 +78,12 @@ public class NetworkSchema {
                 LAYER, // 1
                 ROW, // 2
                 COLUMN, // 3
-                VALUE // 4
+                VALUE, // 4
+                DIMENSION // 5
         };
         db = Database.getInstance(context);
         conn = db.getReadableDatabase();
-        cursor = conn.query(TABLE, campos, where, null, null, null, null, null);
+        cursor = conn.query(TABLE, campos, where, null, null, null, LAYER);
         List<Network> list = new ArrayList<>();
         while (cursor.moveToNext())
             list.add(parse(cursor, context));
@@ -75,6 +99,7 @@ public class NetworkSchema {
         network.setRow(cursor.getInt(2));
         network.setColumn(cursor.getInt(3));
         network.setValue(cursor.getDouble(4));
+        network.setDimension(cursor.getString(5));
         return network;
     }
 

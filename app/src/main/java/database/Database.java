@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class Database extends SQLiteOpenHelper {
 
     public static final String NAME = "database.db";
-    private static final int VERSAO = 4;
+    private static final int VERSAO = 5;
     private static Database instance;
 
     public Database(Context context) {
@@ -47,7 +47,8 @@ public class Database extends SQLiteOpenHelper {
                 + NetworkSchema.LAYER + " integer,"
                 + NetworkSchema.ROW + " integer,"
                 + NetworkSchema.COLUMN + " integer,"
-                + NetworkSchema.VALUE + " real"
+                + NetworkSchema.VALUE + " real,"
+                + NetworkSchema.DIMENSION + " text"
                 +")";
 
         db.execSQL(setting);
@@ -59,6 +60,7 @@ public class Database extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         db.execSQL("DROP TABLE IF EXISTS " + SettingSchema.TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + WorkSchema.TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + NetworkSchema.TABLE);
         onCreate(db);
     }
 

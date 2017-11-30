@@ -13,6 +13,7 @@ public class Network {
     private long _id;
     private int layer, column, row;
     private double value;
+    private String dimension;
 
     private NetworkSchema schema;
     private Context context;
@@ -40,6 +41,9 @@ public class Network {
     public boolean save () {
         return schema.record(this);
     }
+    public static void save (Context context, double[][][] weights) {
+        new NetworkSchema(context).record(weights);
+    }
 
     public int getLayer () {
         return layer;
@@ -52,5 +56,11 @@ public class Network {
     }
     public double getValue () {
         return value;
+    }
+    public void setDimension(String dimension) {
+        this.dimension = dimension;
+    }
+    public String getDimension() {
+        return dimension;
     }
 }

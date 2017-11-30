@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.List;
 import models.CalendarProvider;
 import models.Day;
 import models.Task;
+import services.Predict;
 import zerodois.neuralnetwork.NeuralNetwork;
 
 public class TabActivity extends AppCompatActivity implements CalendarFragment.Listener {
@@ -61,15 +63,6 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         super.onCreate(savedInstanceState);
         prototype = this;
         setContentView(R.layout.activity_tab);
-
-        /* Neural Network test
-        NeuralNetwork net = new NeuralNetwork(true);
-        net.learn(new double[][]{ {0, 0}, {0, 1}, {1, 0}, {1, 1} }, new double[][]{ {1}, {0}, {0}, {1} });
-        double[] r = net.predict(new double[]{0, 0});
-        for (int i =0; i<r.length; i++)
-            Log.d("PREDICT::", i + " >> " + r[i]);
-        */
-
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             Intent intent = new Intent(this, IntroActivity.class);
             startActivity(intent);
@@ -88,6 +81,7 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         calendar();
         navigation.setSelectedItemId(R.id.navigation_calendar);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        new Predict(this).execute();
 
         AppRater.app_launched(this);
     }
