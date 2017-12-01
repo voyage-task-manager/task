@@ -113,6 +113,8 @@ public class CalendarProvider implements Parcelable {
 
     public static List<Task> readCalendar(Calendar init, Calendar end, ContentResolver resolver, long _id) {
         Uri.Builder eventsUriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon();
+        init.set(Calendar.HOUR_OF_DAY, 0);
+        init.set(Calendar.MINUTE, 1);
 
         String filter = "";
         String[] values;
@@ -156,8 +158,8 @@ public class CalendarProvider implements Parcelable {
     public static List<Task> readCalendar(int month, int year, ContentResolver resolver) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, 1);
         c.set(Calendar.YEAR, year);
+        c.set(Calendar.DAY_OF_MONTH, 1);
         return readCalendar(c, null, resolver);
     }
 

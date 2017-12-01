@@ -128,7 +128,7 @@ public class MainFragment extends Fragment {
 
                 Graph graph = new Graph(i, o, mySetting, activity);
                 int t = (int) Math.ceil( (now.getEnd() - now.getDate())/3600000 );
-                List<Task> prev = graph.organize(origin, t);
+                List<Task> prev = graph.organize(origin, t, null);
 
                 if (prev.size() == 0) {
                     Toast.makeText(activity, "Não há tempo na sua agenda para executar esta tarefa :(", Toast.LENGTH_LONG).show();

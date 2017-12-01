@@ -163,15 +163,14 @@ public class Day implements Parcelable {
     }
 
     public List<int[]> getFreeVector () {
-
-        int lunchTime = 2;
         int wake = setting != null ? Integer.parseInt( setting.getWake()[0].split(":")[0] ) : 6;
         Calendar inst = Calendar.getInstance();
         if (compare(inst, calendar))
-            wake = inst.get(Calendar.HOUR_OF_DAY);
+            wake = Math.max(wake, inst.get(Calendar.HOUR_OF_DAY));
 
         int index = 0;
         int start = 0;
+        int sleep = Integer.parseInt(setting.getSleep()[0].split(":")[0]);
         List<int[]> ret = new ArrayList<>();
 
         while (index < all) {
@@ -187,9 +186,8 @@ public class Day implements Parcelable {
                 index += 1;
         }
         if (start != 0)
-            ret.add(new int[]{ start, 24 });
+            ret.add(new int[]{ start, sleep });
 
-        Log.d("INFO::", "FULL DEBUG " + wake + " >> " + toString() + " << " + String.format(Locale.getDefault(), "%tD", calendar.getTime()));
         return ret;
     }
 

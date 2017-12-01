@@ -31,14 +31,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import components.Tooltip;
 import components.Waiting;
 import models.CalendarProvider;
 import models.Graph;
 import models.Setting;
 import models.Task;
 import models.Work;
+import services.Predict;
+import zerodois.neuralnetwork.NeuralNetwork;
 
-public class CreateEvent extends AppCompatActivity implements View.OnClickListener, AccountDialog.Listener {
+public class CreateEvent extends AppCompatActivity implements View.OnClickListener, AccountDialog.Listener, TabActivity.NetworkUser {
 
     private List<CalendarProvider> calendars;
     private Button date_input;
@@ -142,13 +145,12 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("calendars", new ArrayList<Parcelable>(calendars));
-                FragmentManager fm = getSupportFragmentManager();
-                AccountDialog dialog = new AccountDialog();
-                dialog.setArguments(bundle);
-                dialog.show(fm, "dialog_fragment");
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("calendars", new ArrayList<Parcelable>(calendars));
+            FragmentManager fm = getSupportFragmentManager();
+            AccountDialog dialog = new AccountDialog();
+            dialog.setArguments(bundle);
+            dialog.show(fm, "dialog_fragment");
             }
         };
     }
@@ -179,11 +181,7 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
     }
 
     /*  */
-    public void createEvent(View view) throws InterruptedException {
-        w = new Waiting(this, active_plan.isChecked() ? "Configurando seu tempo" : "Salvando evento na agenda");
-        if (calendars.size() == 0)
-            return;
-
+    public void createEvent(NeuralNetwork network) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR_OF_DAY, 1);
         Graph graph = new Graph(c, calendar, setting, this);
@@ -194,8 +192,7 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         // Não planeja a agenda do usuário
         if (!active_plan.isChecked()) {
             long _id = task.record(this);
-            if (_id == -1)
-                Log.d("INFO::", "Erro ao salvar no calendar");
+            if (_id == -1) tooltip(new Tooltip(this, "Erro ao salvar no calendario"));
             close();
             return;
         }
@@ -205,23 +202,22 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
             estimateText = estimate_picker.getText().toString();
         int estimative = Integer.parseInt(estimateText);
         int estimate = Work.translatePayload(estimative, (int) period_spinner.getSelectedItemId(), setting);
-        List<Task> l = graph.organize(task, estimate);
+        List<Task> l = graph.organize(task, estimate, network);
 
         if (l.size() == 0) {
-            final Activity act = this;
-            onClose = new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(act, "Não há tempo na sua agenda para executar esta tarefa :(", Toast.LENGTH_LONG).show();
-                }
-            };
-            close();
+            tooltip(new Tooltip(this, "Não há tempo na sua agenda para executar esta tarefa :("));
+            destroy();
             return;
         }
 
+        save(estimative, task, l);
+        close();
+    }
+
+    private void save (int estimative, Task task, List<Task> list) {
         long _id = task.record(this);
         if (_id == -1) {
-            Log.d("INFO::", "Erro ao salvar no calendar");
+            tooltip(new Tooltip(this, "Erro ao salvar no calendario"));
             close();
             return;
         }
@@ -232,28 +228,34 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
         work.setTask(task.getID());
         work.setReference(-1);
         if (!work.save()) {
-            Log.d("INFO::", "Erro ao salvar do DB :((");
+            tooltip(new Tooltip(this, "Erro ao salvar do banco de dados"));
             close();
             return;
         }
-
         work.setReference(task.getID());
-        for (Task t : l) {
+        for (Task t : list) {
             _id = t.record(this);
             if (_id == -1) {
-                Log.d("INFO::", "Erro ao salvar o fragmento no calendar :((");
+                tooltip(new Tooltip(this, "Erro ao salvar o fragmento no calendario"));
                 close();
                 return;
             }
             work.setTask(t.getID());
             if (!work.save()) {
-                Log.d("INFO::", "Erro ao salvar o fragmento no DB :((");
+                tooltip(new Tooltip(this, "Erro ao salvar o fragmento no banco de dados"));
                 close();
                 return;
             }
         }
+    }
 
-        close();
+    public void tooltip (final Tooltip t) {
+        onClose = new Runnable() {
+            @Override
+            public void run() {
+                t.show();
+            }
+        };
     }
 
     private void close() {
@@ -276,7 +278,6 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
             estimate_picker.setTextColor(ContextCompat.getColor(this, R.color.text));
             estimate_picker.setHintTextColor(ContextCompat.getColor(this, R.color.disabled));
         }
-
         estimate_picker.setEnabled(active);
         period_spinner.setEnabled(active);
     }
@@ -284,15 +285,37 @@ public class CreateEvent extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        destroy();
+    }
+
+    public void destroy () {
         if (w != null)
             w.close();
         if (onClose != null)
             (new Handler()).post(onClose);
+        onClose = null;
     }
 
     @Override
     public void setCalendar(CalendarProvider calendar) {
         this.calendarProvider = calendar;
         event_calendar.setText(calendar.getName());
+    }
+
+    @Override
+    public void ready(NeuralNetwork network) {
+        createEvent(network);
+    }
+
+    public void createEventClick (View view) {
+        if (calendars.size() == 0) {
+            tooltip(new Tooltip(this, "Você não possui agendas do Google Agenda"));
+            close();
+            return;
+        }
+        w = new Waiting(this, active_plan.isChecked() ? "Configurando seu tempo" : "Salvando evento na agenda");
+        if (TabActivity.prototype.network == null && active_plan.isChecked())
+            TabActivity.prototype.register(this);
+        else createEvent(TabActivity.prototype.network);
     }
 }

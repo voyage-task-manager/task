@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.felipe.app.voyage.example.felipe.app.CreateEvent">
+    tools:context="voyage.task.zerodois.app.CreateEvent">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -52,7 +52,7 @@
                     android:gravity="end"
                     android:textAllCaps="true"
                     android:text="@string/salvar"
-                    android:onClick="createEvent"
+                    android:onClick="createEventClick"
                     android:textSize="15dp"
                     android:textColor="#fff"/>
             </LinearLayout>

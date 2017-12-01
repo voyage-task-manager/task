@@ -26,16 +26,28 @@ import models.Task;
 import services.Predict;
 import zerodois.neuralnetwork.NeuralNetwork;
 
-public class TabActivity extends AppCompatActivity implements CalendarFragment.Listener {
+public class TabActivity extends AppCompatActivity implements CalendarFragment.Listener, Predict.Ready {
 
     private BottomNavigationView navigation;
     private FragmentManager fm;
     private final int PERMISSIONS_REQUEST_WRITE_CALENDAR = 788;
     private ArrayList<ArrayList<Day>> start;
     public static TabActivity prototype;
-    private NeuralNetwork network;
+    public NeuralNetwork network;
     private Day today;
+    private List<NetworkUser> users;
     Fragment atual;
+
+    @Override
+    public void onReady(NeuralNetwork network) {
+        for (NetworkUser user : users)
+            user.ready(network);
+        this.network = network;
+    }
+
+    public interface NetworkUser {
+        public void ready (NeuralNetwork network);
+    }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -81,7 +93,8 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         calendar();
         navigation.setSelectedItemId(R.id.navigation_calendar);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        new Predict(this).execute();
+        users = new ArrayList<>();
+        new Predict(this, this).execute();
 
         AppRater.app_launched(this);
     }
@@ -178,7 +191,6 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         ArrayList<Day> arr = load(month, year);
         start.add(arr);
         start.add( load( (month+1)%12, month < 11 ? year : year + 1) );
-
         int number = c.get(Calendar.DAY_OF_MONTH);
         today = null;
         for (Day d : arr) {
@@ -187,8 +199,14 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
                 break;
             }
         }
-
         if (atual != null && atual instanceof CalendarFragment)
             ((CalendarFragment) atual).atualize();
+    }
+
+    public void register (NetworkUser user) {
+        users.add(user);
+    }
+    public void remove (int index) {
+        users.remove(index);
     }
 }

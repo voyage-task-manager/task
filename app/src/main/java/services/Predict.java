@@ -20,6 +20,11 @@ public class Predict extends AsyncTask<Void, Void, NeuralNetwork>{
     private double[][][] weights;
     private double[][] out;
     private boolean train;
+    private Ready callback;
+
+    public interface Ready {
+        public void onReady (NeuralNetwork network);
+    }
 
     private static final int LAYERS = 1;
 
@@ -29,9 +34,10 @@ public class Predict extends AsyncTask<Void, Void, NeuralNetwork>{
         return new double[]{d, h};
     }
 
-    public Predict (Activity activity) {
+    public Predict (Activity activity, Ready callback) {
         this.activity = activity;
         this.train = false;
+        this.callback = callback;
     }
 
     @Override
@@ -68,9 +74,8 @@ public class Predict extends AsyncTask<Void, Void, NeuralNetwork>{
     }
 
     @Override
-    protected NeuralNetwork doInBackground(Void... voids) {
+    protected NeuralNetwork doInBackground(Void... params) {
         NeuralNetwork network = new NeuralNetwork(LAYERS);
-
         if (!train) {
             network.load(weights);
         } else {
@@ -78,11 +83,11 @@ public class Predict extends AsyncTask<Void, Void, NeuralNetwork>{
             double[][][] exp = network.export();
             Network.save(activity, exp);
         }
-
-        double[] p = network.predict(new double[]{ 4.0/7, 11.0/24 });
-        for (int i = 0; i < p.length; i++)
-        Log.d("PREDICT::", "" + p[i]);
-
         return network;
+    }
+
+    @Override
+    protected void onPostExecute(NeuralNetwork network){
+        callback.onReady(network);
     }
 }
