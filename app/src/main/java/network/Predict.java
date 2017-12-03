@@ -1,6 +1,6 @@
-package services;
+package network;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -15,7 +15,7 @@ import zerodois.neuralnetwork.NeuralNetwork;
  */
 
 public class Predict extends AsyncTask<Void, Void, NeuralNetwork>{
-    private Activity activity;
+    private Context context;
     private double[][] dataset;
     private double[][][] weights;
     private double[][] out;
@@ -28,35 +28,45 @@ public class Predict extends AsyncTask<Void, Void, NeuralNetwork>{
 
     private static final int LAYERS = 1;
 
-    private double[] normalize (int day, int hour) {
-        double d = ((double) day)/7;
-        double h = ((double) hour)/24;
-        return new double[]{d, h};
-    }
-
-    public Predict (Activity activity, Ready callback) {
-        this.activity = activity;
+    public Predict (Context context, Ready callback) {
+        this.context = context;
         this.train = false;
         this.callback = callback;
     }
 
     @Override
     protected void onPreExecute () {
-        List<Network> networks = NetworkSchema.find(activity, null);
+        List<Network> networks = NetworkSchema.find(context, null);
         if (networks.size() > 0){
             weights = format(networks);
             return;
         }
         train = true;
-        int total = 168; // 24*7
-        dataset = new double[total][2];
-        out = new double[total][1];
+        int total = 24*7; // 24*7
+        int[] frees = new int[]{};
+        int weeks = 5;
+
+        dataset = new double[total + (16*weeks*frees.length)][];
+        out = new double[total + (16*weeks*frees.length)][1];
+
         int index = 0;
-        for (int d=0; d<6; d++)
-            for (int h=0; h<23; h++)
-                dataset[index] = normalize(d, h);
-        for (int i=0; i<total; i++)
-            out[i] = new double[]{ 1 };
+        for (int d=0; d<7; d++)
+            for (int h=0; h<24; h++)
+                dataset[index++] = new Input(d, h, 1).toArray();
+        index = 0;
+        for (int d=0; d<7; d++)
+            for (int h=0; h<24; h++)
+                out[index++] = new double[]{ 1 };
+
+        for (int w=0; w<weeks; w++) {
+            for (int i=0; i<frees.length; i++) {
+                int f = frees[i];
+                for (int h=8; h<24; h++) {
+                    dataset[index] = new Input(f, h, 0).toArray();
+                    out[index++] = new double[]{ 0 };
+                }
+            }
+        }
     }
 
     private double[][][] format(List<Network> networks) {
@@ -75,13 +85,15 @@ public class Predict extends AsyncTask<Void, Void, NeuralNetwork>{
 
     @Override
     protected NeuralNetwork doInBackground(Void... params) {
-        NeuralNetwork network = new NeuralNetwork(LAYERS);
+        NeuralNetwork network = new NeuralNetwork(LAYERS, 8);
+        //for (int i=0; i<dataset.length; i++)
+            //Log.d("INFO::", dataset[i].length + " >> " + i);
         if (!train) {
             network.load(weights);
         } else {
             network.learn(dataset, out);
             double[][][] exp = network.export();
-            Network.save(activity, exp);
+            Network.save(context, exp);
         }
         return network;
     }

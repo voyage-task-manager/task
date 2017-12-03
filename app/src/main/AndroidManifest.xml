@@ -12,19 +12,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="voyage.task.zerodois.app.MainActivity" />
-        <activity android:name="voyage.task.zerodois.app.LogInActivity" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".LogInActivity" />
         <activity
-            android:name="voyage.task.zerodois.app.TabActivity"
+            android:name=".TabActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="voyage.task.zerodois.app.CreateEvent" />
-        <activity android:name="voyage.task.zerodois.app.EventActivity" />
-        <activity android:name="voyage.task.zerodois.app.IntroActivity">
+        <activity android:name=".CreateEvent" />
+        <activity android:name=".EventActivity" />
+        <activity android:name=".IntroActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".NetworkLearn"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".NetworkService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +25,10 @@ import models.Graph;
 import models.Setting;
 import models.Task;
 import models.Work;
+import network.Input;
+import zerodois.neuralnetwork.NeuralNetwork;
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements TabActivity.NetworkUser {
 
     private LinearLayout linear;
     private ArrayList<Task> tasks;
@@ -84,75 +87,25 @@ public class MainFragment extends Fragment {
                     rotine_hour.setText( "Você tem " + periodo + " livre, aproveite!");
                 }
                 rotine_icon.setImageResource(R.drawable.ic_very_happy_black_24px);
-                //rotine_icon.setImageDrawable( ContextCompat.getDrawable(getActivity(), R.drawable.ic_very_happy_black_24px) );
             } else {
                 to_late.setVisibility(View.VISIBLE);
                 rotine_name.setText("Agora é hora de trabalhar na tarefa " + now.getTitle());
                 rotine_hour.setText( String.format(Locale.getDefault(), "Das %tR até %tR", now.getDate(), now.getEnd()) );
                 rotine_icon.setImageResource(R.drawable.ic_work_black_24px);
-                //rotine_icon.setImageDrawable( ContextCompat.getDrawable(getActivity(), R.drawable.ic_work_black_24px) );
             }
-
-            /*PersonalAdapter adapter = new PersonalAdapter(getActivity(), tasks);
-            for (int i=0; i<tasks.size(); i++)
-                if (linear != null)
-                    linear.addView(adapter.getView(i, null, linear));
-                else
-                    Log.d("INFO::", "NOOOOO!");*/
         }
 
         to_late.setOnClickListener(onClick());
     }
 
     private View.OnClickListener onClick () {
+        final MainFragment frag = this;
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Button b = ((Button) view);
-                Work work = Work.findByTask(activity, now.getID());
-                if (work == null || work.getReference() == -1)
-                    return;
-                List<Task> list = CalendarProvider.readCalendar(activity.getContentResolver()); //CalendarProvider.readCalendar(null, null, activity.getContentResolver(), work.getReference());
-                Task origin = null;
-                for (Task l : list)
-                    if (l.getID() == work.getReference()) {
-                        origin = l;
-                        break;
-                    }
-                if (origin == null)
-                    return;
-                Calendar o = Calendar.getInstance();
-                Calendar i = Calendar.getInstance();
-                i.set(Calendar.HOUR_OF_DAY, 1);
-                o.setTimeInMillis(origin.getDate());
-
-                Graph graph = new Graph(i, o, mySetting, activity);
-                int t = (int) Math.ceil( (now.getEnd() - now.getDate())/3600000 );
-                List<Task> prev = graph.organize(origin, t, null);
-
-                if (prev.size() == 0) {
-                    Toast.makeText(activity, "Não há tempo na sua agenda para executar esta tarefa :(", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                for (Task n: prev) {
-                    n.record(activity);
-                    Work w = new Work(activity);
-                    w.setPayloadType(work.getPayloadType());
-                    w.setPayload(w.getPayload());
-                    w.setReference(work.getReference());
-                    w.setTask(n.getID());
-                    w.save();
-                }
-
-                Task.delete(activity, now.getID());
-                work.delete();
-                TabActivity.prototype.reload();
-
-                b.setEnabled(false);
-                b.setClickable(false);
-                b.setText("Tarefa adiada, procrastine a vontade :)");
-                b.setTextColor(ContextCompat.getColor(activity, R.color.disabled));
+                if (TabActivity.prototype.network == null)
+                    TabActivity.prototype.register(frag);
+                else reorganize(TabActivity.prototype.network);
             }
         };
     }
@@ -167,5 +120,67 @@ public class MainFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof Activity)
             activity = (Activity) context;
+    }
+
+    @Override
+    public void ready(NeuralNetwork network) {
+        reorganize(network);
+    }
+
+    public void reorganize (NeuralNetwork network) {
+        Work work = Work.findByTask(activity, now.getID());
+        if (work == null || work.getReference() == -1) {
+            Toast.makeText(TabActivity.prototype, "Apenas tarefas cadastradas no aplicativo podem ser adiadas", Toast.LENGTH_LONG).show();
+            return;
+        }
+        List<Task> list = CalendarProvider.readCalendar(activity.getContentResolver()); //CalendarProvider.readCalendar(null, null, activity.getContentResolver(), work.getReference());
+        Task origin = null;
+        for (Task l : list)
+            if (l.getID() == work.getReference()) {
+                origin = l;
+                break;
+            }
+        if (origin == null)
+            return;
+        Calendar o = Calendar.getInstance();
+        Calendar i = Calendar.getInstance();
+        i.set(Calendar.HOUR_OF_DAY, 1);
+        o.setTimeInMillis(origin.getDate());
+
+        Graph graph = new Graph(i, o, mySetting, activity);
+        int t = (int) Math.ceil( (now.getEnd() - now.getDate())/3600000 );
+        List<Task> prev = graph.organize(origin, t, network);
+
+        if (prev.size() == 0) {
+            Toast.makeText(activity, "Não há tempo na sua agenda para executar esta tarefa :(", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        for (Task n: prev) {
+            n.record(activity);
+            Work w = new Work(activity);
+            w.setPayloadType(work.getPayloadType());
+            w.setPayload(w.getPayload());
+            w.setReference(work.getReference());
+            w.setTask(n.getID());
+            w.save();
+        }
+
+        Task.delete(activity, now.getID());
+        work.delete();
+        TabActivity.prototype.reload();
+
+        Input input = new Input(TabActivity.prototype);
+        Calendar inputC = Calendar.getInstance();
+        input.setHour(inputC.get(Calendar.HOUR_OF_DAY));
+        input.setDay(inputC.get(Calendar.DAY_OF_WEEK));
+        input.setValue(0);
+        input.save();
+
+        Button b = to_late;
+        b.setEnabled(false);
+        b.setClickable(false);
+        b.setText("Tarefa adiada :)");
+        b.setTextColor(ContextCompat.getColor(activity, R.color.disabled));
     }
 }

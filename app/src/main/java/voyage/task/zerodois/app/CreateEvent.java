@@ -1,6 +1,5 @@
 package voyage.task.zerodois.app;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.graphics.Typeface;
@@ -12,7 +11,6 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -22,7 +20,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,7 +35,6 @@ import models.Graph;
 import models.Setting;
 import models.Task;
 import models.Work;
-import services.Predict;
 import zerodois.neuralnetwork.NeuralNetwork;
 
 public class CreateEvent extends AppCompatActivity implements View.OnClickListener, AccountDialog.Listener, TabActivity.NetworkUser {

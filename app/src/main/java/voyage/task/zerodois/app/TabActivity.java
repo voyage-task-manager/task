@@ -1,7 +1,12 @@
 package voyage.task.zerodois.app;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.VoiceInteractor;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -20,10 +25,13 @@ import java.util.Calendar;
 import android.Manifest;
 import java.util.List;
 
+import database.InputSchema;
 import models.CalendarProvider;
 import models.Day;
+import models.Network;
 import models.Task;
-import services.Predict;
+import network.Input;
+import network.Predict;
 import zerodois.neuralnetwork.NeuralNetwork;
 
 public class TabActivity extends AppCompatActivity implements CalendarFragment.Listener, Predict.Ready {
@@ -95,6 +103,13 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         users = new ArrayList<>();
         new Predict(this, this).execute();
+
+        AlarmManager alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        // Set the alarm to start at approximately 2:00 p.m.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        // startService(new Intent(this, NetworkService.class));
 
         AppRater.app_launched(this);
     }
