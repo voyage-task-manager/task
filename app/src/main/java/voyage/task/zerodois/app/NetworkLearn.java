@@ -46,8 +46,8 @@ public class NetworkLearn extends IntentService implements Predict.Ready {
             data[i] = inputs.get(i).toArray();
             out[i] = new double[]{ inputs.get(i).getValue() };
         }
-        network.learn(data, out);
-        double[][][] exp = network.export();
-        Network.save(this, exp);
+        //network.learn(data, out);
+        //double[][][] exp = network.export();
+        //Network.save(this, exp);
     }
 }

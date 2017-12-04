@@ -109,7 +109,7 @@ public class TabActivity extends AppCompatActivity implements CalendarFragment.L
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
-        // startService(new Intent(this, NetworkService.class));
+        startService(new Intent(this, NetworkService.class));
 
         AppRater.app_launched(this);
     }

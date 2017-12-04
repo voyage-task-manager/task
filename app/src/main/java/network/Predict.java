@@ -86,8 +86,6 @@ public class Predict extends AsyncTask<Void, Void, NeuralNetwork>{
     @Override
     protected NeuralNetwork doInBackground(Void... params) {
         NeuralNetwork network = new NeuralNetwork(LAYERS, 8);
-        //for (int i=0; i<dataset.length; i++)
-            //Log.d("INFO::", dataset[i].length + " >> " + i);
         if (!train) {
             network.load(weights);
         } else {

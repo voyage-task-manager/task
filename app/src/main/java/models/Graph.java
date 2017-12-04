@@ -26,6 +26,12 @@ public class Graph {
         this.setting = setting;
         List<Task> l = CalendarProvider.readCalendar(init, end, activity.getContentResolver());
         list = Day.create(init, end, l, true, setting);
+        Collections.sort(list, new Comparator<Day>() {
+            @Override
+            public int compare(Day day, Day t1) {
+                return day.getNumber() < t1.getNumber() ? -1  : (day.getNumber() > t1.getNumber() ? +1 : 0);
+            }
+        });
         for (Iterator<Day> it = list.iterator(); it.hasNext();)
             if (it.next().getFree() <= 0) it.remove();
     }
@@ -59,13 +65,13 @@ public class Graph {
                 for (int hour = v[0]; hour <= v[1] && total > 0; hour++) {
                     if (today > 0 && hour < today) continue;
                     if (lim > 0 && hour > lim) break;
+                    Log.d("INFERNO", day + " >> " + hour + " :: " + network.predict(new Input(day, hour, -1).toArray())[0]);
                     if ((init > 0 && (int) hour == v[1]) || network.predict(new Input(day, hour, -1).toArray())[0] <= 0.8 || hour == lim) {
                         analyze(init, org, (int) hour, t, item);
                         init = -1;
                         continue;
                     }
                     if (hour == v[1]) continue;
-                    Log.d("INFERNO", hour + " >> " + total + " :: " + init);
                     total--;
                     if (total == 0) analyze(init < 0 ? (int) hour : init, org, hour+1, t, item);
                     if (init < 0) init = hour;
